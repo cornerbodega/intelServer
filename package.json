@@ -1,0 +1,23 @@
+{
+  "name": "rhyme-with-us-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.10.0",
+    "axios": "^1.3.4",
+    "express": "^4.18.2",
+    "firebase": "^9.17.2",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.1",
+    "sql.js": "^1.8.0",
+    "undici": "^5.21.0"
+  }
+}
