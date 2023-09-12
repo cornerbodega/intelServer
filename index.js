@@ -1,3 +1,4 @@
+console.log("INTELLIGENCE SERVER");
 import express from "express";
 // const handlebars = require('handlebars');
 // import fetch from 'node-fetch';
