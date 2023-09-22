@@ -29,8 +29,8 @@ export default async function handler(req, res) {
     return;
   }
   console.log("GENERATE EXPERTISE ENDPOINT");
-  console.log("Input:");
-  console.log(req.body);
+  console.log("Req");
+  console.log(req);
   const expertiseOutput = get(req, "body.expertiseOutput");
   console.log("GENERATE AGENT NAME FUNCTION");
   console.log("input: expertiseOutput");
