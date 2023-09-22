@@ -15,9 +15,8 @@ import lodash from "lodash";
 // Destructuring lodash methods
 const { get } = lodash;
 
-// Importing specific exports from "openai"
-
 import OpenAI from "openai";
+// Importing specific exports from "openai"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // defaults to process.env["OPENAI_API_KEY"]
