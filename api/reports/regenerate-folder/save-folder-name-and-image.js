@@ -4,9 +4,50 @@ export default async function handler(req, res) {
   console.log("SAVE FOLDER NAME AND IMAGE");
   console.log("Input:");
   console.log(req.body);
-  const { folderName, folderPicUrl, folderDescription, folderId } = req.body;
+  const {
+    folderName,
+    folderPicUrl,
+    folderDescription,
+    folderId,
+    folderImageResponse,
+  } = req.body;
 
-  const folderNameAndImage = { folderName, folderPicUrl, folderDescription };
+  // Get existing folder data
+  const existingFolderData = await getExistingFolderData(folderId);
+  async function getExistingFolderData() {
+    try {
+      const { data, error } = await supabase
+        .from("folders")
+        .select("*")
+        .eq("folderId", folderId);
+      if (error) {
+        console.log(error);
+      }
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  console.log("existingFolderData");
+  console.log(existingFolderData);
+  const existingFolderId = existingFolderData[0].folderId;
+  const existingFolderName = existingFolderData[0].folderName;
+  const existingFolderPicUrl = existingFolderData[0].folderPicUrl;
+  let existingFolderPicUrls = existingFolderData[0].folderPicUrls;
+  if (existingFolderPicUrls) {
+    existingFolderPicUrls = JSON.parse(existingFolderPicUrls);
+  } else {
+    existingFolderPicUrls = [];
+  }
+  existingFolderPicUrls.push(folderPicUrl);
+  const folderPicUrls = JSON.stringify(existingFolderPicUrls);
+  const folderNameAndImage = {
+    folderName,
+    folderPicUrl,
+    folderPicUrls,
+    folderDescription,
+    folderPicDescription: folderImageResponse,
+  };
   console.log("folderNameAndImage", folderNameAndImage);
   console.log("folderNameAndImageexistingFolderId");
   // console.log(existingFolderId);
@@ -22,7 +63,9 @@ export default async function handler(req, res) {
         .update({
           folderName: folderNameAndImage.folderName,
           folderPicUrl: folderNameAndImage.folderPicUrl,
+          folderPicUrls: folderNameAndImage.folderPicUrls,
           folderDescription: folderNameAndImage.folderDescription,
+          folderPicDescription: folderNameAndImage.folderPicDescription,
         })
         .eq("folderId", folderId);
 

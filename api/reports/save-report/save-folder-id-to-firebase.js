@@ -4,7 +4,7 @@
 import saveToFirebase from "../../../utils/saveToFirebase.js";
 
 export default async function handler(req, res) {
-  console.log("QUEUE SAVE REGENERATE FOLDER TASK ENDPOINT");
+  console.log("SAVE FOLDER ID TO FIREBASE ENDPOINT");
   // const { draft, researchLink1, researchLink2, researchLink3 } = req.body;
   console.log(req.body);
   const { userId, folderId } = req.body;
@@ -16,29 +16,29 @@ export default async function handler(req, res) {
   //   console.log("currentGeneration == maxGenerations. regenerating folder");
   // }
   try {
-    const newTask = {
-      // taskId: writeDraftTaskId,
-      type: "regenerateFolder",
-      status: "queued",
-      userId,
-      context: {
-        folderId,
-      },
-      createdAt: new Date().toISOString(),
-    };
+    // const newTask = {
+    //   // taskId: writeDraftTaskId,
+    //   type: "regenerateFolder",
+    //   status: "queued",
+    //   userId,
+    //   context: {
+    //     folderId,
+    //   },
+    //   createdAt: new Date().toISOString(),
+    // };
 
-    const saveTaskRef = await saveToFirebase(
-      `asyncTasks/${userId}/regenerateFolder`,
-      newTask
+    const saveFolderIdRef = await saveToFirebase(
+      `asyncTasks/${userId}/finalizeAndVisualizeReport/context/folderId`,
+      folderId
     );
 
-    if (saveTaskRef) {
+    if (saveFolderIdRef) {
       // setWriteDraftTaskId(newTaskRef.key); // Store the task ID to set up the listener
-      console.log("saveTaskRef");
-      console.log(saveTaskRef);
-      return { saveTaskRef };
+      console.log("saveFolderIdRef");
+      console.log(saveFolderIdRef);
+      return { saveFolderIdRef };
     } else {
-      console.error("Failed to queue the task.");
+      console.error("Failed to save the folder id.");
     }
   } catch (error) {
     console.error("Error queuing the task:", error.message);

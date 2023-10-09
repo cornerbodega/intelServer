@@ -29,14 +29,15 @@ async function findTaskDefinition(taskName) {
 async function executeTask(taskName, inputs) {
   const taskDefinition = await findTaskDefinition(taskName);
 
-  console.log("taskDefinition");
-  console.log("inputs");
+  console.log(`taskDefinition ${taskName} inputs:`);
   console.log(inputs);
-  console.log(`currentGeneration: ${inputs.currentGeneration}`);
-  console.log(`maxGenerations: ${inputs.maxGenerations}`);
-  if (inputs.currentGeneration > inputs.maxGenerations) {
-    console.log("currentGeneration > maxGenerations. not executing task");
-    return;
+  // console.log(`currentGeneration: ${inputs.currentGeneration}`);
+  // console.log(`maxGenerations: ${inputs.maxGenerations}`);
+  if (inputs.currentGeneration) {
+    if (inputs.currentGeneration > inputs.maxGenerations) {
+      console.log("currentGeneration > maxGenerations. not executing task");
+      return;
+    }
   }
   if (!taskDefinition) {
     console.log("error 3454: missing taskDefinition for");

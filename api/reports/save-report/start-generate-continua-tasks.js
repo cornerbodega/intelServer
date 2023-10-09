@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   console.log(newTaskContext.currentGeneration);
   console.log("newTaskContext.maxGenerations");
   console.log(newTaskContext.maxGenerations);
-  if (newTaskContext.currentGeneration <= newTaskContext.maxGenerations) {
+  if (newTaskContext.currentGeneration < newTaskContext.maxGenerations) {
     try {
       const newTask = {
         type: "doContinuum",

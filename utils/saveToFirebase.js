@@ -4,10 +4,10 @@ const db = firebase.db;
 export default async function saveToFirebase(table, dataToSave) {
   try {
     const tableRef = ref(db, table);
-    await set(tableRef, dataToSave);
+    return set(tableRef, dataToSave);
     // Data saved successfully
     // console.log("Data saved successfully");
-    return { success: true };
+    // return { success: true };
   } catch (error) {
     console.error("Error inserting data:", error.message);
 

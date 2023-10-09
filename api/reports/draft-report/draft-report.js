@@ -6,7 +6,7 @@ const openai = new OpenAI({
 export async function writeDraftFunction(req) {
   let { currentGeneration, maxGenerations } = req.body;
   if (+currentGeneration > +maxGenerations) {
-    console.log(`currentGeneration: ${currentGeneration}`);
+    // console.log(`currentGeneration: ${currentGeneration}`);
     return console.log("max generations exceeded. not drafting report");
   }
   currentGeneration++;

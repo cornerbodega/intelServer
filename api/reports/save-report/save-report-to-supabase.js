@@ -12,7 +12,8 @@ export default async function handler(req, res) {
     const briefing = req.body.briefing;
     const reportSummary = req.body.reportSummary;
     const userId = req.body.userId;
-
+    const imageDescriptionResponseContent =
+      req.body.imageDescriptionResponseContent;
     // SAVE REPORT TO SUPABASE
     const newReportModel = {};
     newReportModel.reportPicUrl = reportPicUrl;
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
     newReportModel.agentId = agentId;
     newReportModel.reportSummary = reportSummary;
     newReportModel.userId = userId;
-
+    newReportModel.reportPicDescription = imageDescriptionResponseContent;
     console.log(newReportModel);
     console.log("newReportModel");
     // Generate Report Summary and Sanitize Briefing

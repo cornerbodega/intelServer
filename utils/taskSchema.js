@@ -10,7 +10,10 @@ import generateReportImageHandler from "../api/reports/save-report/generate-repo
 import uploadReportImageToCloudinaryHandler from "../api/reports/save-report/upload-report-image-to-cloudinary.js";
 import generateReportSummaryHandler from "../api/reports/save-report/generate-report-summary.js";
 import saveReportToSupabaseHandler from "../api/reports/save-report/save-report-to-supabase.js";
+import updateReportInSupabaseHandler from "../api/reports/save-report/update-report-in-supabase.js";
+import streamContinuumDraftHandler from "../api/reports/draft-report/stream-continuum-draft-handler.js";
 import saveLinksHandler from "../api/reports/save-report/save-links.js";
+import saveLinkHandler from "../api/reports/save-report/save-link.js";
 import handleReportFolderingHandler from "../api/reports/save-report/handle-report-foldering.js";
 import regenerateFolderNameHandler from "../api/reports/regenerate-folder/regenerate-folder-name.js";
 import generateFolderImagePromptHandler from "../api/reports/regenerate-folder/generate-folder-image-prompt.js";
@@ -19,8 +22,11 @@ import uploadFolderImageToCloudinaryHandler from "../api/reports/regenerate-fold
 import saveFolderNameAndImageHandler from "../api/reports/regenerate-folder/save-folder-name-and-image.js";
 import startGenerateContinuumTasksHandler from "../api/reports/save-report/start-generate-continua-tasks.js";
 import generateResearchLinksHandler from "../api/reports/continua/generate-research-links.js";
+import generateResearchLinkHandler from "../api/reports/continua/generate-research-link.js";
 import queueSaveReportTaskHandler from "../api/reports/continua/queue-save-report-task.js";
 import queueRegenerateFolderTaskHandler from "../api/reports/regenerate-folder/queue-regenerate-folder-task.js";
+import writeQuickDraftHandler from "../api/reports/quick-draft/write-quick-draft.js";
+import saveFolderIdToFirebaseHandler from "../api/reports/save-report/save-folder-id-to-firebase.js";
 export default function taskSchema() {
   return {
     addAgent: {
@@ -90,6 +96,310 @@ export default function taskSchema() {
       ],
       outputs: ["draftResponseContent", "currentGeneration"],
     },
+    quickDraft: {
+      // function: quickDraftHandler,
+      // endpoint: "/api/reports/draft-report/draft-report",
+      inputs: [
+        "briefingInput",
+        "userId",
+        "draft",
+        // "expertises",
+        // "specializedTraining",
+        "feedback",
+        // "maxGenerations",
+        // "currentGeneration",
+      ],
+      outputs: ["draftResponseContent"],
+      subtasks: [
+        {
+          taskName: "generateExpertise",
+          function: generateExpertiseHandler,
+          // endpoint: "/api/agents/add-agent/generate-expertise",
+          inputs: ["briefingInput", "specializedTraining", "userId"],
+          outputs: ["expertiseOutput"],
+        },
+        {
+          taskName: "writeQuickDraft",
+          function: writeQuickDraftHandler,
+          // endpoint: "/api/reports/draft-report/draft-report",
+          inputs: [
+            "expertiseOutput",
+            "briefingInput",
+            "feedback",
+            "draft",
+            "userId",
+          ],
+          outputs: ["draftResponseContent"],
+        },
+      ],
+    },
+    continuum: {
+      inputs: [
+        "parentReportId",
+        "userId",
+        "parentReportContent",
+        "agentId",
+        "expertises",
+        "specializedTraining",
+        "existingHyperlinks",
+      ],
+      outputs: [],
+      subtasks: [
+        {
+          taskName: "generateResearchLink",
+          function: generateResearchLinkHandler,
+          // endpoint: "/api/reports/continua/generate-research-link",
+          inputs: [
+            "parentReportId",
+            "userId",
+            "parentReportContent",
+            "existingHyperlinks",
+          ],
+          outputs: ["researchLink"],
+        },
+        {
+          taskSchema: "steamContinuumDraft",
+          function: streamContinuumDraftHandler,
+          // endpoint: "/api/reports/draft-report/draft-report",
+          inputs: [
+            "researchLink",
+            "expertises",
+            "specializedTraining",
+            "userId",
+          ],
+          outputs: ["draft"],
+        },
+        {
+          taskName: "saveReportWithoutImage",
+          function: saveReportToSupabaseHandler,
+          inputs: ["draft", "userId"],
+          outputs: ["childReportId"],
+        },
+        {
+          taskName: "handleReportFoldering",
+          function: handleReportFolderingHandler,
+          inputs: ["childReportId", "parentReportId", "userId"],
+          outputs: ["folderId"],
+        },
+        {
+          taskName: "saveFolderIdToFirebase",
+          function: saveFolderIdToFirebaseHandler,
+          inputs: ["folderId", "userId"],
+          outputs: [],
+        },
+
+        {
+          taskName: "getImagePromptForReport",
+          // endpoint: "/api/reports/save-report/generate-image-prompt-for-report",
+          function: generateImagePromptForReportHandler,
+          inputs: ["draft"],
+          outputs: ["imageDescriptionResponseContent"],
+        },
+        {
+          taskName: "generateReportImage",
+          // endpoint: "/api/reports/save-report/generate-report-image",
+          function: generateReportImageHandler,
+          inputs: ["imageDescriptionResponseContent", "userId"],
+          outputs: ["imageUrl, draftTitle"],
+        },
+        {
+          taskName: "uploadReportImageToCloudinary",
+          function: uploadReportImageToCloudinaryHandler,
+          endpoint:
+            "/api/reports/save-report/upload-report-image-to-cloudinary",
+          inputs: ["imageUrl"],
+          outputs: ["reportPicUrl"],
+        },
+        {
+          taskName: "getReportSummary",
+          function: generateReportSummaryHandler,
+          endpoint: "/api/reports/save-report/generate-report-summary",
+          inputs: ["draft"],
+          outputs: ["reportSummary"],
+        },
+        {
+          taskName: "updateReportInSupabase",
+          function: updateReportInSupabaseHandler,
+          endpoint: "/api/reports/save-report/save-report-to-supabase",
+          inputs: [
+            "childReportId",
+            "draft",
+            "agentId",
+            "userId",
+            "reportPicUrl",
+            "reportSummary",
+            "briefing",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+          ],
+          outputs: ["childReportId"],
+        },
+
+        {
+          taskName: "saveLink",
+          function: saveLinkHandler,
+          // endpoint: "/api/reports/save-report/save-links",
+          inputs: ["parentReportId", "childReportId", "userId", "researchLink"],
+          outputs: ["saveLinksData"],
+        },
+        {
+          taskName: "queueRegenerateFolderTask",
+          function: queueRegenerateFolderTaskHandler,
+          // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
+          inputs: ["folderId", "userId"],
+          outputs: [],
+        },
+      ],
+    },
+    finalizeAndVisualizeReport: {
+      inputs: [
+        "draft",
+        "userId",
+        "parentReportId",
+        "expertiseOutput",
+        "specializedTraining",
+      ],
+      outputs: [],
+      subtasks: [
+        {
+          taskName: "saveReportWithoutImage",
+          function: saveReportToSupabaseHandler,
+          inputs: ["draft", "userId"],
+          outputs: ["childReportId"],
+        },
+        {
+          taskName: "handleReportFoldering",
+          function: handleReportFolderingHandler,
+          inputs: ["childReportId", "parentReportId", "userId"],
+          outputs: ["folderId"],
+        },
+        {
+          taskName: "saveFolderIdToFirebase",
+          function: saveFolderIdToFirebaseHandler,
+          inputs: ["folderId", "userId"],
+          outputs: [],
+        },
+
+        {
+          taskName: "getImagePromptForReport",
+          // endpoint: "/api/reports/save-report/generate-image-prompt-for-report",
+          function: generateImagePromptForReportHandler,
+          inputs: ["draft"],
+          outputs: ["imageDescriptionResponseContent"],
+        },
+        {
+          taskName: "generateReportImage",
+          // endpoint: "/api/reports/save-report/generate-report-image",
+          function: generateReportImageHandler,
+          inputs: ["imageDescriptionResponseContent", "userId"],
+          outputs: ["imageUrl, draftTitle"],
+        },
+        {
+          taskName: "uploadReportImageToCloudinary",
+          function: uploadReportImageToCloudinaryHandler,
+          endpoint:
+            "/api/reports/save-report/upload-report-image-to-cloudinary",
+          inputs: ["imageUrl"],
+          outputs: ["reportPicUrl"],
+        },
+        {
+          taskName: "getReportSummary",
+          function: generateReportSummaryHandler,
+          endpoint: "/api/reports/save-report/generate-report-summary",
+          inputs: ["draft"],
+          outputs: ["reportSummary"],
+        },
+        {
+          taskName: "updateReportInSupabase",
+          function: updateReportInSupabaseHandler,
+          endpoint: "/api/reports/save-report/save-report-to-supabase",
+          inputs: [
+            "childReportId",
+            "draft",
+            "agentId",
+            "userId",
+            "reportPicUrl",
+            "reportSummary",
+            "briefing",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+          ],
+          outputs: ["childReportId"],
+        },
+
+        {
+          taskName: "saveLinks",
+          function: saveLinksHandler,
+          // endpoint: "/api/reports/save-report/save-links",
+          inputs: [
+            "parentReportId",
+            "childReportId",
+            "highlightedText",
+            "elementId",
+            "userId",
+          ],
+          outputs: ["saveLinksData"],
+        },
+        {
+          taskName: "queueRegenerateFolderTask",
+          function: queueRegenerateFolderTaskHandler,
+          // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
+          inputs: ["folderId", "userId"],
+          outputs: [],
+        },
+        {
+          taskName: "generateAgentName",
+          function: generateAgentNameHandler,
+          // endpoint: "/api/agents/add-agent/generate-agent-name",
+          inputs: ["expertiseOutput", "specializedTraining", "userId"],
+          outputs: ["agentName", "bio"],
+        },
+        {
+          taskName: "generateAgentProfilePic",
+          function: generateAgentProfilePicHandler,
+          // endpoint: "/api/agents/add-agent/generate-agent-profile-pic",
+          inputs: ["agentName", "userId"],
+          outputs: ["imageUrl"],
+        },
+        {
+          taskName: "uploadAgentProfilePic",
+          function: uploadAgentProfilePicHandler,
+          // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
+          inputs: ["imageUrl", "userId"],
+          outputs: ["profilePicUrl"],
+        },
+        {
+          taskName: "saveAgent",
+          function: saveAgentToSupabaseHandler,
+          // endpoint: "/api/agents/add-agent/save-agent-to-supabase",
+          inputs: [
+            "profilePicUrl",
+            "agentName",
+            "bio",
+            "expertiseOutput",
+            "userId",
+          ],
+          outputs: ["agentId"],
+        },
+        {
+          taskName: "updateReportInSupabase",
+          function: updateReportInSupabaseHandler,
+          endpoint: "/api/reports/save-report/save-report-to-supabase",
+          inputs: [
+            "childReportId",
+            "draft",
+            "agentId",
+            "userId",
+            "reportPicUrl",
+            "reportSummary",
+            "briefing",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+          ],
+          outputs: ["childReportId"],
+        },
+      ],
+    },
     saveReport: {
       inputs: [
         "draft",
@@ -150,6 +460,7 @@ export default function taskSchema() {
             "reportSummary",
             "briefing",
             "draftTitle",
+            "imageDescriptionResponseContent",
           ],
           outputs: ["childReportId"],
         },
@@ -174,7 +485,12 @@ export default function taskSchema() {
           inputs: ["childReportId", "parentReportId", "userId"],
           outputs: ["folderId"],
         },
-
+        {
+          taskName: "saveFolderIdToFirebase",
+          function: saveFolderIdToFirebaseHandler,
+          inputs: ["folderId", "userId"],
+          outputs: [],
+        },
         {
           taskName: "startGenerateContinuumTasks",
           function: startGenerateContinuumTasksHandler,
@@ -242,6 +558,7 @@ export default function taskSchema() {
           // endpoint: "/api/reports/save-report/save-folder-name-and-image",
           inputs: [
             "folderPicUrl",
+            "folderImageResponse",
             "folderId",
             "folderName",
             "folderDescription",
@@ -289,7 +606,7 @@ export default function taskSchema() {
             "specializedTraining",
             "feedback",
             "maxGenerations",
-            "currentGeneration ",
+            "currentGeneration",
           ],
           outputs: ["draft1", "currentGeneration"],
         },

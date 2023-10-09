@@ -136,6 +136,12 @@ app.use("/assets", express.static("assets"));
 // Root
 ///////////////////////////////////////////////////////
 
+// ///////////////////////////////////////////////////////
+// // Save Firebase Task
+// ///////////////////////////////////////////////////////
+import saveTask from "./api/tasks/save-task.js";
+app.use("/api/tasks/save-task", saveTask);
+
 app.get("/", async (req, res) => {
   try {
     console.log("Hello");

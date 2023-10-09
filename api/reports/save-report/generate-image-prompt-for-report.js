@@ -7,7 +7,13 @@ export default async function handler(req, res) {
   //   console.log(req.body);
   //   console.log(draft);
 
-  const draftTitle = draft.split(`<h2 id="reportTitle">`)[1].split(`</h2>`)[0];
+  let draftTitle = "";
+  try {
+    draftTitle = draft.split(`<h2 id="reportTitle">`)[1].split(`</h2>`)[0];
+  } catch {
+    return { error: "Errror Generating Image: Could not get draft title" };
+  }
+
   // describe this article as a photograph of place on earth in less than 300 characters: Research Report: Impact of Persistence and Goal-Setting on Project Success and Performance in Different Industries
   // const imageTypes = [
   //   "photograph",
