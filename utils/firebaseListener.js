@@ -5,6 +5,8 @@ import { taskExecutor } from "./taskExecutor.js";
 // import { isActiveTab } from "./activeTab";
 const db = firebase.db;
 const ref = firebase.ref;
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import saveToFirebase from "./saveToFirebase.js";
 export default function setupFirebaseListener() {
   console.log("SETUP FIREBASE LISTENER");
   function signServerIntoFirebase() {
@@ -18,24 +20,18 @@ export default function setupFirebaseListener() {
     onValue(taskRef, async (snapshot) => {
       const allUserTasks = snapshot.val();
 
-      // If there's no data at all, just return
       if (!allUserTasks) {
         return;
       }
 
-      // Loop through each user's set of tasks
       for (let userId in allUserTasks) {
         const userTasks = allUserTasks[userId];
 
-        // For each user, loop through their tasks by taskType
         for (let taskType in userTasks) {
           const taskData = userTasks[taskType];
 
-          // Now that you have the individual taskData, you can process it
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
-            console.log("taskData:", taskData);
-            console.log("taskType:", taskType);
 
             const taskDefinition = taskSchema()[taskType];
             if (!taskDefinition) {
@@ -45,14 +41,12 @@ export default function setupFirebaseListener() {
               return;
             }
 
-            const updatedStatusToInProgress = await set(
-              ref(
-                db,
-                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
-              ),
-              "in-progress"
-            );
             try {
+              const saveStatusInProgress = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`,
+                "in-progress"
+              );
+
               const updatedContext = await taskExecutor({
                 taskName: taskType,
                 taskData: taskData,
@@ -60,57 +54,40 @@ export default function setupFirebaseListener() {
                 taskDefinition,
               });
 
-              if (!updatedContext) {
-                console.log("Nothing returned from task executor.");
-                return;
-              }
-
               if (
+                !updatedContext ||
                 JSON.stringify(taskData.context) ===
-                JSON.stringify(updatedContext)
+                  JSON.stringify(updatedContext)
               ) {
                 console.log("No changed context returned from task executor.");
                 return;
               }
 
-              const updatedStatusToComplete = await set(
-                ref(
-                  db,
-                  `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
-                ),
+              const saveStatusComplete = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`,
                 "complete"
               );
 
-              const updatedStatusCompletedAt = await set(
-                ref(
-                  db,
-                  `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/completedAt`
-                ),
+              const saveCompletedAt = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/completedAt`,
                 new Date().toISOString()
               );
 
-              const updatedStatusContext = await set(
-                ref(
-                  db,
-                  `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/context`
-                ),
+              const saveContext = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/context`,
                 updatedContext
               );
             } catch (error) {
-              const updatedStatusError = await set(
-                ref(
-                  db,
-                  `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
-                ),
-                "error"
-              );
               console.log("Error processing task for user:", userId);
               console.log(error);
-              const updatedStatusErrorMessage = await set(
-                ref(
-                  db,
-                  `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/errorMessage`
-                ),
+
+              const saveStatusError = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`,
+                "error"
+              );
+
+              const saveErrorMessage = await saveToFirebase(
+                `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/errorMessage`,
                 error.message || "Unknown error"
               );
             }
@@ -119,6 +96,113 @@ export default function setupFirebaseListener() {
       }
     });
   });
+
+  // signServerIntoFirebase().then(async (userCredential) => {
+  //   const taskRef = ref(db, `asyncTasks/${process.env.serverUid}/`);
+  //   onValue(taskRef, async (snapshot) => {
+  //     const allUserTasks = snapshot.val();
+
+  //     // If there's no data at all, just return
+  //     if (!allUserTasks) {
+  //       return;
+  //     }
+
+  //     // Loop through each user's set of tasks
+  //     for (let userId in allUserTasks) {
+  //       const userTasks = allUserTasks[userId];
+
+  //       // For each user, loop through their tasks by taskType
+  //       for (let taskType in userTasks) {
+  //         const taskData = userTasks[taskType];
+
+  //         // Now that you have the individual taskData, you can process it
+  //         if (taskData.status === "queued") {
+  //           console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
+  //           console.log("taskData:", taskData);
+  //           console.log("taskType:", taskType);
+
+  //           const taskDefinition = taskSchema()[taskType];
+  //           if (!taskDefinition) {
+  //             console.error(
+  //               `Task definition not found for task type: ${taskType}`
+  //             );
+  //             return;
+  //           }
+
+  //           const updatedStatusToInProgress = await set(
+  //             ref(
+  //               db,
+  //               `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
+  //             ),
+  //             "in-progress"
+  //           );
+  //           try {
+  //             const updatedContext = await taskExecutor({
+  //               taskName: taskType,
+  //               taskData: taskData,
+  //               taskContext: {},
+  //               taskDefinition,
+  //             });
+
+  //             if (!updatedContext) {
+  //               console.log("Nothing returned from task executor.");
+  //               return;
+  //             }
+
+  //             if (
+  //               JSON.stringify(taskData.context) ===
+  //               JSON.stringify(updatedContext)
+  //             ) {
+  //               console.log("No changed context returned from task executor.");
+  //               return;
+  //             }
+
+  //             const updatedStatusToComplete = await set(
+  //               ref(
+  //                 db,
+  //                 `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
+  //               ),
+  //               "complete"
+  //             );
+
+  //             const updatedStatusCompletedAt = await set(
+  //               ref(
+  //                 db,
+  //                 `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/completedAt`
+  //               ),
+  //               new Date().toISOString()
+  //             );
+
+  //             const updatedStatusContext = await set(
+  //               ref(
+  //                 db,
+  //                 `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/context`
+  //               ),
+  //               updatedContext
+  //             );
+  //           } catch (error) {
+  //             const updatedStatusError = await set(
+  //               ref(
+  //                 db,
+  //                 `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/status`
+  //               ),
+  //               "error"
+  //             );
+  //             console.log("Error processing task for user:", userId);
+  //             console.log(error);
+  //             const updatedStatusErrorMessage = await set(
+  //               ref(
+  //                 db,
+  //                 `/asyncTasks/${process.env.serverUid}/${userId}/${taskType}/errorMessage`
+  //               ),
+  //               error.message || "Unknown error"
+  //             );
+  //           }
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
   // onValue(taskRef, async (snapshot) => {
   //   if (!snapshot.val()) {
   //     return;
