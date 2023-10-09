@@ -108,14 +108,14 @@ export async function writeDraftFunction(req) {
     // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     const saveChunkToFirebase = await saveToFirebase(
-      `/asyncTasks/${req.body.userId}/writeDraftReport/context/draft`,
+      `/asyncTasks/${process.env.serverUid}/${req.body.userId}/writeDraftReport/context/draft`,
       `${newAccumulatedContent}…`
     );
     // console.log("saveChunkToFirebase");
     // console.log(saveChunkToFirebase);
   }
   const saveDraftToFirebase = await saveToFirebase(
-    `/asyncTasks/${req.body.userId}/writeDraftReport/context/draft`,
+    `/asyncTasks/${process.env.serverUid}/${req.body.userId}/writeDraftReport/context/draft`,
     `${newAccumulatedContent}${" ".repeat(3)}`
   );
 }

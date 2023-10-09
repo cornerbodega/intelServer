@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     };
 
     const saveTaskRef = await saveToFirebase(
-      `asyncTasks/${userId}/saveReport`,
+      `asyncTasks/${process.env.serverUid}/${userId}/saveReport`,
       newTask
     );
 

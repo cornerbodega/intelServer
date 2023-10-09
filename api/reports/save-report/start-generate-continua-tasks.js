@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       };
 
       const newTaskRef = await saveToFirebase(
-        `asyncTasks/${userId}/doContinuum`,
+        `asyncTasks/${process.env.serverUid}/${userId}/doContinuum`,
         newTask
       );
     } catch (error) {
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     //   },
     // };
     // await saveToFirebase(
-    //   `asyncTasks/${context.userId}/generateContinuumTasks`,
+    //   `asyncTasks/${process.env.serverUid}/${context.userId}/generateContinuumTasks`,
     //   nextGenerationTask
     // );
   }

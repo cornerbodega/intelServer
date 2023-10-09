@@ -8,6 +8,7 @@ import { onValue, set } from "firebase/database";
 
 // import firebase from "./firebase.js";
 import firebase from "../../../utils/firebase.js";
+import saveToFirebase from "../../../utils/saveToFirebase.js";
 // import { isActiveTab } from "./activeTab";
 const db = firebase.db;
 const ref = firebase.ref;
@@ -115,12 +116,19 @@ export default async function draftReportHandler(req, res) {
   for await (const part of stream) {
     // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
-    const saveChunkToFirebase = await set(
-      ref(db, `/asyncTasks/${userId}/continuum/context/draft`),
-      `${newAccumulatedContent}…`
+    await saveToFirebase(
+      `/asyncTasks/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
+      `${newAccumulatedContent}`
     );
+    // const saveChunkToFirebase = await set(
+    //   ref(
+    //     db,
+    //     `/asyncTasks/${process.env.serverUid}/${userId}/continuum/context/draft`
+    //   ),
+    //   `${newAccumulatedContent}…`
+    // );
     // const saveChunkToFirebase = await saveToFirebase(
-    //   `/asyncTasks/${req.body.userId}/continuum/context/draft`,
+    //   `/asyncTasks/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
     //   `${newAccumulatedContent}…`
     // );
     // console.log("saveChunkToFirebase");
@@ -131,12 +139,20 @@ export default async function draftReportHandler(req, res) {
     // console.log(saveChunkToFirebase);
   }
   newAccumulatedContent = `${newAccumulatedContent}${" ".repeat(3)}`;
-  const saveDraftToFirebase = await set(
-    ref(db, `/asyncTasks/${userId}/continuum/context/draft`),
+  const saveDraftToFirebase = await saveToFirebase(
+    `/asyncTasks/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
     `${newAccumulatedContent}`
   );
+
+  // const saveDraftToFirebase = await set(
+  //   ref(
+  //     db,
+  //     `/asyncTasks/${process.env.serverUid}/${userId}/continuum/context/draft`
+  //   ),
+  //   `${newAccumulatedContent}`
+  // );
   // const saveDraftToFirebase = await saveToFirebase(
-  //   `/asyncTasks/${req.body.userId}/continuum/context/draft`,
+  //   `/asyncTasks/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
   //   `${newAccumulatedContent}${" ".repeat(3)}`
   // );
   return { draft: newAccumulatedContent };
