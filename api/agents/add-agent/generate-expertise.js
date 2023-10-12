@@ -14,10 +14,10 @@ export default async function generateExpertiseHandler(req, res) {
   console.log(req);
   console.log("Input:");
   console.log(req.body);
-  const briefingInput = get(req, "body.briefingInput");
+  const expertiseInput = get(req, "body.expertiseInput");
   console.log("GENERATE EXPERTISE FUNCTION");
   console.log("Input");
-  console.log(briefingInput);
+  console.log(expertiseInput);
 
   const expertiseCompletion = await openai.chat.completions
     .create({
@@ -39,7 +39,7 @@ export default async function generateExpertiseHandler(req, res) {
         },
         {
           role: "user",
-          content: `${briefingInput} `,
+          content: `${expertiseInput} `,
         },
       ],
     })
