@@ -45,7 +45,7 @@ async function executeTask(taskName, inputs) {
     return;
   }
 
-  if (taskDefinition.function && taskDefinition.status === "in-progress") {
+  if (taskDefinition.function) {
     return await taskDefinition.function({ body: inputs });
     // } else if (taskDefinition.endpoint) {
     //   const handler = import `{taskDefinition.endpoint}.js`
