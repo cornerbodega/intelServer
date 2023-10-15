@@ -30,12 +30,13 @@ export default async function handler(req, res) {
     },
     {
       role: "user",
-      content: `describe a ${imageType} of the place in nature that corresponds to this title in less than 300 characters: ${draftTitle}. The location will be the subject of a landscape photographer.`,
+      content: `describe a ${imageType} of the place that corresponds to this title in less than 300 characters: ${draftTitle}. The location will be used my dall-e to create an image for immersive context for the report.`,
     },
   ];
 
-  const imageDescriptionResponseContent = await getFromOpenAi(
+  let imageDescriptionResponseContent = await getFromOpenAi(
     getDraftImageMessages
   );
+  imageDescriptionResponseContent = `${imageDescriptionResponseContent}, photograph`;
   return { imageDescriptionResponseContent, draftTitle };
 }

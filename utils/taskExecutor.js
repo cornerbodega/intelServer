@@ -179,7 +179,7 @@ export async function taskExecutor({ taskName, taskData, taskContext }) {
 //     };
 
 //     await saveToFirebase(
-//       `asyncTasks/${process.env.serverUid}/${context.userId}/${taskName}`,
+//       `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${context.userId}/${taskName}`,
 //       nextGenerationTask
 //     );
 //   }
@@ -192,7 +192,7 @@ export async function taskExecutor({ taskName, taskData, taskContext }) {
 // //     };
 
 // //     await saveToFirebase(
-// //       `asyncTasks/${process.env.serverUid}/${context.userId}/${taskName}`,
+// //       `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${context.userId}/${taskName}`,
 // //       nextGenerationTask
 // //     );
 // //   }
@@ -287,7 +287,7 @@ export async function taskExecutor({ taskName, taskData, taskContext }) {
 // //       context: accumulatedContext, // Update context here directly
 // //     };
 // //     await saveToFirebase(
-// //       `asyncTasks/${process.env.serverUid}/${accumulatedContext.userId}/${taskName}`,
+// //       `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${accumulatedContext.userId}/${taskName}`,
 // //       nextGenerationTask
 // //     );
 // //   }

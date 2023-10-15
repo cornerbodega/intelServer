@@ -30,7 +30,11 @@ export default async function handler(req, res) {
       };
 
       const newTaskRef = await saveToFirebase(
-        `asyncTasks/${process.env.serverUid}/${userId}/doContinuum`,
+        `/${
+          process.env.localAsyncTasks
+            ? process.env.localAsyncTasks
+            : "asyncTasks"
+        }/${process.env.serverUid}/${userId}/doContinuum`,
         newTask
       );
     } catch (error) {
@@ -44,7 +48,7 @@ export default async function handler(req, res) {
     //   },
     // };
     // await saveToFirebase(
-    //   `asyncTasks/${process.env.serverUid}/${context.userId}/generateContinuumTasks`,
+    //   `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${context.userId}/generateContinuumTasks`,
     //   nextGenerationTask
     // );
   }

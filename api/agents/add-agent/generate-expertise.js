@@ -14,7 +14,8 @@ export default async function generateExpertiseHandler(req, res) {
   console.log(req);
   console.log("Input:");
   console.log(req.body);
-  const expertiseInput = get(req, "body.expertiseInput");
+  const expertiseInput = get(req, "body.briefingInput");
+  // const { expertiseInput } = req.body;
   console.log("GENERATE EXPERTISE FUNCTION");
   console.log("Input");
   console.log(expertiseInput);

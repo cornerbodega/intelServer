@@ -17,8 +17,12 @@ export default async function handler(req, res) {
   //   };
 
   const { userId, type } = req.body;
+  console.log("process.env.localAsyncTasks");
+  console.log(process.env.localAsyncTasks);
   const saveTaskRef = await saveToFirebase(
-    `asyncTasks/${process.env.serverUid}/${userId}/${type}/`,
+    `/${
+      process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
+    }/${process.env.serverUid}/${userId}/${type}/`,
     req.body
   );
   console.log("saveTaskRef");
