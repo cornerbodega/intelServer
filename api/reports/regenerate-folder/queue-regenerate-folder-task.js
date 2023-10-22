@@ -7,14 +7,42 @@ export default async function handler(req, res) {
   console.log("QUEUE SAVE REGENERATE FOLDER TASK ENDPOINT");
   // const { draft, researchLink1, researchLink2, researchLink3 } = req.body;
   console.log(req.body);
-  const { userId, folderId } = req.body;
-  // if (+currentGeneration != +maxGenerations || currentGeneration != 0) {
-  //   return console.log(
-  //     "currentGeneration != maxGenerations. skipping folder regeneration"
-  //   );
-  // } else {
-  //   console.log("currentGeneration == maxGenerations. regenerating folder");
+  const { userId, folderId, currentGeneration, maxGenerations } = req.body;
+  // this conditional should allow doContinuum to regenerate the folder only once
+  // finalizeAndVisualize should regenerate the folder
+  // doContinuum shouldn't have to
+  // if (currentGeneration) {
+  //   if (+currentGeneration != +maxGenerations) {
+  //     return console.log(
+  //       "currentGeneration != maxGenerations. skipping folder regeneration"
+  //     );
+  //   } else {
+  //     console.log("currentGeneration == maxGenerations. regenerating folder");
+  //   }
   // }
+  // check if the folder id has a folderPicUrl
+  // async function getExistingFolderData() {
+  try {
+    const { foldersResponse, error } = await supabase
+      .from("folders")
+      .select("folderPicUrl")
+      .eq("folderId", folderId);
+    if (error) {
+      console.log(error);
+    }
+    if (foldersResponse) {
+      if (foldersResponse[0]) {
+        if (foldersResponse[0].folderPicUrl) {
+          console.log("folderPicUrl exists");
+          return;
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  // }
+
   try {
     const newTask = {
       // taskId: writeDraftTaskId,

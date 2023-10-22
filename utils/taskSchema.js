@@ -242,13 +242,13 @@ export default function taskSchema() {
           inputs: ["parentReportId", "childReportId", "userId", "researchLink"],
           outputs: ["saveLinksData"],
         },
-        {
-          taskName: "queueRegenerateFolderTask",
-          function: queueRegenerateFolderTaskHandler,
-          // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
-          inputs: ["folderId", "userId"],
-          outputs: [],
-        },
+        // {
+        //   taskName: "queueRegenerateFolderTask",
+        //   function: queueRegenerateFolderTaskHandler,
+        //   // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
+        //   inputs: ["folderId", "userId"],
+        //   outputs: [],
+        // },
       ],
     },
     finalizeAndVisualizeReport: {

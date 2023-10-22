@@ -15,13 +15,21 @@ export default async function handler(req, res) {
   }
 
   // describe this article as a photograph of place on earth in less than 300 characters: Research Report: Impact of Persistence and Goal-Setting on Project Success and Performance in Different Industries
-  // const imageTypes = [
-  //   "photograph",
-  //   "realist painting",
-  //   "impressionist painting",
-  // ];
-  // const imageType = imageTypes[getRandomInt(0, imageTypes.length - 1)];
-  const imageType = "photograph";
+  const imageTypes = [
+    "photograph",
+    "realist painting",
+    "impressionist painting",
+    "macro photograph",
+    "cartoon",
+    "3d rendering",
+  ];
+  const imageType = imageTypes[getRandomInt(0, imageTypes.length - 1)];
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  // const imageType = "macro photograph";
   const getDraftImageMessages = [
     {
       role: "system",
@@ -34,9 +42,9 @@ export default async function handler(req, res) {
     },
   ];
 
-  let imageDescriptionResponseContent = await getFromOpenAi(
+  const imageDescriptionResponseContent = await getFromOpenAi(
     getDraftImageMessages
   );
-  imageDescriptionResponseContent = `${imageDescriptionResponseContent}, photograph`;
+  // imageDescriptionResponseContent = `${imageDescriptionResponseContent}, photograph`;
   return { imageDescriptionResponseContent, draftTitle };
 }

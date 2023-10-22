@@ -16,7 +16,14 @@ export default async function handler(req, res) {
     })
     .catch((error) => {
       console.log(error);
+      // todo: error logging here to determine why the image wasn't generated. for example, if it's a   code: 'content_policy_violation', why did it happen?
     });
+  if (!aiImageResponse.data) {
+    return {
+      imageUrl:
+        "https://res.cloudinary.com/dcf11wsow/image/upload/v1697948290/c5ejkmxbucery6xnz2mg.png",
+    };
+  }
   const imageUrl = aiImageResponse.data[0].url;
   return { imageUrl };
 }
