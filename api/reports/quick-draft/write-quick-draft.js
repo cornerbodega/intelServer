@@ -92,7 +92,8 @@ export async function writeDraftFunction(req) {
   console.log("write quick draft messages");
   console.log(messages);
   const stream = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
+    // model: "gpt-3.5-turbo",
     messages,
     stream: true,
   });

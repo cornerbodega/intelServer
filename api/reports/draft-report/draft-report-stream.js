@@ -96,7 +96,8 @@ export async function writeDraftFunction(req) {
     messages = [...messages, ...feedback];
   }
   const stream = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    // model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages,
     stream: true,
   });
