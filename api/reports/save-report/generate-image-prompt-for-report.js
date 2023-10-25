@@ -45,6 +45,8 @@ export default async function handler(req, res) {
   const imageDescriptionResponseContent = await getFromOpenAi(
     getDraftImageMessages
   );
+  console.log("imageDescriptionResponseContent");
+  console.log(imageDescriptionResponseContent);
   // imageDescriptionResponseContent = `${imageDescriptionResponseContent}, photograph`;
   return { imageDescriptionResponseContent, draftTitle };
 }

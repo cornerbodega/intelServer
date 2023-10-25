@@ -10,7 +10,7 @@ export default async function getFromOpenAi(messages) {
       messages: messages,
     })
     .catch((error) => {
-      console.log("error");
+      console.log("get from open ai error");
       console.log(error);
     });
 
