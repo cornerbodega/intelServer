@@ -18,9 +18,9 @@ export default function setupFirebaseListener() {
   signServerIntoFirebase().then(async (userCredential) => {
     const taskRef = ref(
       db,
-      `/${
-        process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-      }/${process.env.serverUid}/`
+      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+        process.env.serverUid
+      }/`
     );
     onValue(taskRef, async (snapshot) => {
       const allUserTasks = snapshot.val();
@@ -49,9 +49,7 @@ export default function setupFirebaseListener() {
             try {
               const saveStatusInProgress = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/status`,
                 "in-progress"
               );
@@ -74,27 +72,21 @@ export default function setupFirebaseListener() {
 
               const saveStatusComplete = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/status`,
                 "complete"
               );
 
               const saveCompletedAt = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/completedAt`,
                 new Date().toISOString()
               );
 
               const saveContext = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/context`,
                 updatedContext
               );
@@ -104,18 +96,14 @@ export default function setupFirebaseListener() {
 
               const saveStatusError = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/status`,
                 "error"
               );
 
               const saveErrorMessage = await saveToFirebase(
                 `/${
-                  process.env.localAsyncTasks
-                    ? process.env.localAsyncTasks
-                    : "asyncTasks"
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
                 }/${process.env.serverUid}/${userId}/${taskType}/errorMessage`,
                 error.message || "Unknown error"
               );
@@ -127,7 +115,7 @@ export default function setupFirebaseListener() {
   });
 
   // signServerIntoFirebase().then(async (userCredential) => {
-  //   const taskRef = ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/`);
+  //   const taskRef = ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/`);
   //   onValue(taskRef, async (snapshot) => {
   //     const allUserTasks = snapshot.val();
 
@@ -161,7 +149,7 @@ export default function setupFirebaseListener() {
   //           const updatedStatusToInProgress = await set(
   //             ref(
   //               db,
-  //               `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
+  //               `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
   //             ),
   //             "in-progress"
   //           );
@@ -189,7 +177,7 @@ export default function setupFirebaseListener() {
   //             const updatedStatusToComplete = await set(
   //               ref(
   //                 db,
-  //                 `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
+  //                 `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
   //               ),
   //               "complete"
   //             );
@@ -197,7 +185,7 @@ export default function setupFirebaseListener() {
   //             const updatedStatusCompletedAt = await set(
   //               ref(
   //                 db,
-  //                 `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/completedAt`
+  //                 `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/completedAt`
   //               ),
   //               new Date().toISOString()
   //             );
@@ -205,7 +193,7 @@ export default function setupFirebaseListener() {
   //             const updatedStatusContext = await set(
   //               ref(
   //                 db,
-  //                 `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/context`
+  //                 `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/context`
   //               ),
   //               updatedContext
   //             );
@@ -213,7 +201,7 @@ export default function setupFirebaseListener() {
   //             const updatedStatusError = await set(
   //               ref(
   //                 db,
-  //                 `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
+  //                 `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/status`
   //               ),
   //               "error"
   //             );
@@ -222,7 +210,7 @@ export default function setupFirebaseListener() {
   //             const updatedStatusErrorMessage = await set(
   //               ref(
   //                 db,
-  //                 `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/errorMessage`
+  //                 `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/${taskType}/errorMessage`
   //               ),
   //               error.message || "Unknown error"
   //             );
@@ -274,7 +262,7 @@ export default function setupFirebaseListener() {
   //       }
 
   //       const updatedStatusToInProgress = await set(
-  //         ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
+  //         ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
   //         "in-progress"
   //       );
   //       try {
@@ -299,16 +287,16 @@ export default function setupFirebaseListener() {
   //           );
   //         }
   //         const updatedStatusToComplete = await set(
-  //           ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
+  //           ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
   //           "complete"
   //         );
 
   //         const updatedStatusCompletedAt = await set(
-  //           ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/completedAt`),
+  //           ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/completedAt`),
   //           new Date().toISOString()
   //         );
   //         const updatedStatusContext = await set(
-  //           ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/context`),
+  //           ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/context`),
   //           updatedContext
   //         );
 
@@ -316,13 +304,13 @@ export default function setupFirebaseListener() {
   //         // await querySupabase(taskType, updatedContext);
   //       } catch (error) {
   //         const updatedStatusError = await set(
-  //           ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
+  //           ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/status`),
   //           "error"
   //         );
   //         console.log("firebase listener error");
   //         console.log(error);
   //         const updatedStatusErrorMessage = await set(
-  //           ref(db, `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/errorMessage`),
+  //           ref(db, `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${user.sub}/${taskType}/errorMessage`),
   //           error
   //         );
   //       }

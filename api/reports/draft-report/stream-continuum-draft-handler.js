@@ -118,20 +118,20 @@ export default async function draftReportHandler(req, res) {
     // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     await saveToFirebase(
-      `/${
-        process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-      }/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
+      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+        process.env.serverUid
+      }/${req.body.userId}/continuum/context/draft`,
       `${newAccumulatedContent}`
     );
     // const saveChunkToFirebase = await set(
     //   ref(
     //     db,
-    //     `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/continuum/context/draft`
+    //     `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/continuum/context/draft`
     //   ),
     //   `${newAccumulatedContent}…`
     // );
     // const saveChunkToFirebase = await saveToFirebase(
-    //   `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
+    //   `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
     //   `${newAccumulatedContent}…`
     // );
     // console.log("saveChunkToFirebase");
@@ -144,7 +144,9 @@ export default async function draftReportHandler(req, res) {
   newAccumulatedContent = `${newAccumulatedContent}${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
     `/${
-      process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
+      process.env.NEXT_PUBLIC_env
+        ? process.env.NEXT_PUBLIC_env
+        : "localAsyncTasks"
     }/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
     `${newAccumulatedContent}`
   );
@@ -152,12 +154,12 @@ export default async function draftReportHandler(req, res) {
   // const saveDraftToFirebase = await set(
   //   ref(
   //     db,
-  //     `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${userId}/continuum/context/draft`
+  //     `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${userId}/continuum/context/draft`
   //   ),
   //   `${newAccumulatedContent}`
   // );
   // const saveDraftToFirebase = await saveToFirebase(
-  //   `/${process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"}/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
+  //   `/${process.env.NEXT_PUBLIC_env ? process.env.NEXT_PUBLIC_env : "localAsyncTasks"}/${process.env.serverUid}/${req.body.userId}/continuum/context/draft`,
   //   `${newAccumulatedContent}${" ".repeat(3)}`
   // );
   return { draft: newAccumulatedContent };

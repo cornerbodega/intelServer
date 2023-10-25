@@ -45,7 +45,8 @@ export default async function generateExpertiseHandler(req, res) {
       ],
     })
     .catch((error) => console.error(error));
-
+  console.log("expertiseCompletion");
+  console.log(expertiseCompletion);
   const expertiseResponse = JSON.parse(
     expertiseCompletion.choices[0].message.content
   );

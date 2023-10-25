@@ -28,9 +28,7 @@ export default async function handler(req, res) {
     // };
 
     const saveFolderIdRef = await saveToFirebase(
-      `/${
-        process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-      }/${
+      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
         process.env.serverUid
       }/${userId}/finalizeAndVisualizeReport/context/folderId`,
       folderId

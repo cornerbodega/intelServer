@@ -21,7 +21,9 @@ export default async function handler(req, res) {
   console.log(process.env.localAsyncTasks);
   const saveTaskRef = await saveToFirebase(
     `/${
-      process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
+      process.env.NEXT_PUBLIC_env
+        ? process.env.NEXT_PUBLIC_env
+        : "localAsyncTasks"
     }/${process.env.serverUid}/${userId}/${type}/`,
     req.body
   );

@@ -56,9 +56,9 @@ export default async function handler(req, res) {
     };
 
     const saveTaskRef = await saveToFirebase(
-      `/${
-        process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-      }/${process.env.serverUid}/${userId}/regenerateFolder`,
+      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+        process.env.serverUid
+      }/${userId}/regenerateFolder`,
       newTask
     );
 
