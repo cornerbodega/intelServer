@@ -56,7 +56,7 @@ export async function writeDraftFunction(req) {
   let messages = [
     {
       role: "system",
-      content: `You are an expert at generating an interesting research report for given prompt in the areas of ${expertiseString}. You always return answers with no explanation. You always return responses in html format inside a <div id="report"></div>. The report title is always in an <h2 id="reportTitle"> within the <div id="report">. Each tag within the <div id="report"> has a unique 12-digit id attribute. ${specializedTrainingString}`,
+      content: `You are an expert at generating an interesting research report for given prompt in the areas of ${expertiseString}. You always return answers with no explanation. You always return responses in html format inside a <div id="report"></div>. The first child tag is an <h2 id="reportTitle">...</h2> within the <div id="report">. After the <div id="reportTitle">...</h2>, each subsequent tag within the <div id="report"> has a unique 12-digit id attribute.`,
     },
     {
       role: "user",
@@ -64,7 +64,7 @@ export async function writeDraftFunction(req) {
     },
     {
       role: "assistant",
-      content: `<div>
+      content: `<div id="report">
           <h2 id="reportTitle">Natural Language Processing (NLP) in the Modern Digital Landscape</h2>
           
           <h3 id="${generateUniqueID()}">Applications:</h3>

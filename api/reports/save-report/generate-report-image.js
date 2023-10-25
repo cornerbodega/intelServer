@@ -8,6 +8,12 @@ export default async function handler(req, res) {
   console.log("GENERATE REPORT IMAGE ENDPOINT");
   console.log(req.body);
   const { imageDescriptionResponseContent } = req.body;
+  if (!imageDescriptionResponseContent) {
+    return {
+      imageUrl:
+        "https://res.cloudinary.com/dcf11wsow/image/upload/v1697948290/c5ejkmxbucery6xnz2mg.png",
+    };
+  }
   const aiImageResponse = await openai.images
     .generate({
       prompt: `${imageDescriptionResponseContent}`,
