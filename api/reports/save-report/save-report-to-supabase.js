@@ -4,12 +4,12 @@ export default async function handler(req, res) {
   console.log("Input:");
   console.log(req.body);
   const { draft, agentId } = req.body;
-  async function saveReportFunction({ draft, agentId }) {
+  async function saveReportFunction({ draft, agentId, briefing }) {
     console.log("save draft function");
     // console.log(draft);
     const reportPicUrl = req.body.reportPicUrl;
     const draftTitle = req.body.draftTitle;
-    const briefing = req.body.briefing;
+    // const briefing = req.body.briefing;
     const reportSummary = req.body.reportSummary;
     const userId = req.body.userId;
     const imageDescriptionResponseContent =

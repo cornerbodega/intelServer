@@ -254,6 +254,7 @@ export default function taskSchema() {
     finalizeAndVisualizeReport: {
       inputs: [
         "draft",
+        "briefing",
         "userId",
         "parentReportId",
         "expertiseOutput",
@@ -264,7 +265,7 @@ export default function taskSchema() {
         {
           taskName: "saveReportWithoutImage",
           function: saveReportToSupabaseHandler,
-          inputs: ["draft", "userId"],
+          inputs: ["draft", "userId", "briefing"],
           outputs: ["childReportId"],
         },
         {

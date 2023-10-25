@@ -53,63 +53,61 @@ export default async function handler(req, res) {
 
 function getArtKnowledge() {
   return `
-  Impressionism
-  Artists: Claude Monet, Pierre-Auguste Renoir, Édouard Manet, Edgar Degas
-  
-  Action painting
-  Artists: Jackson Pollock, Franz Kline, Norman Bluhm, James Brooks, Giovanni Enrico
-  
-  Cubism
-  Artists: Pablo Picasso, Georges Braque, Salvador Dalí, Paul Cézanne, Juan Gris,
-  
-  Pointillism
-  Artists: Georges Seurat, Vincent van Gogh, Paul Signac, Henri-Edmond Cross, 
-  
-  Abstract expressionism
-  Artists: Jackson Pollock, Mark Rothko, Willem de Kooning, Helen Frankenthaler, 
-  
-  Surrealism
-  Artists: Salvador Dalí, René Magritte, Pablo Picasso, André Breton, Frida Kahlo, 
-  
-  Pop art
-  Artists: Andy Warhol, Roy Lichtenstein, Keith Haring, Richard Hamilton, David Hockney 
-  
-  Post-Impressionism
-  Artists: Vincent van Gogh, Paul Cézanne, Paul Gauguin, Georges Seurat, Pablo Picasso 
-  
-  Fauvism
-  Artists: Henri Matisse, André Derain, Georges Braque, Maurice de Vlaminck, Raoul Dufy 
-  
-  Realism
-  Artists: Gustave Courbet, Jean-François Millet, Édouard Manet, Edward Hopper
-  
-  Expressionism
-  Artists: Edvard Munch, Wassily Kandinsky, Emil Nolde, Ernst Ludwig Kirchner
-  
-  Photorealism
-  Artists: Chuck Close, Richard Estes, Gerhard Richter, Vija Celmins, Duane Hanson 
-  
-  Minimalism
-  Artists: Yayoi Kusama, Donald Judd, Frank Stella, Carl Andre, Dan Flavin, Sol LeWitt 
-  
-  Modern art
-  Artists: Pablo Picasso, Claude Monet, Salvador Dalí, Andy Warhol, Jackson Pollock 
-  
-  Art Nouveau
-  Artists: Alphonse Mucha, Gustav Klimt, Charles Rennie Mackintosh, Hector Guimard
-  
-  Rococo
-  Artists: Jean-Honoré Fragonard, Jean-Antoine Watteau, François Boucher, 
-  
-  Art Deco
-  Artists: Erté, Tamara de Lempicka, Jean Dunand, Émile-Jacques Ruhlmann, 
-  
-  Neoclassicism
-  Artists: Jacques-Louis David, Jean Auguste Dominique Ingres, Angelica Kauffman 
-  
-  Futurism
-  Artists: Umberto Boccioni, Giacomo Balla, Gino Severini, Carlo Carrà
-  
-  Dada
-  Artists: Marcel Duchamp`;
+ 
+Frank Miller
+Steve Ditko
+Neal Adams
+Brian Bolland
+Jack Kirby
+Will Eisner
+Jim Steranko
+Fiona Staples
+Dave Gibbons
+John Romita Sr.
+Jillian Tamaki
+Art Spiegelman
+John Romita Jr.
+Lou Fine
+Steve Dillon
+Frank Frazetta
+Wally Wood
+Bernard Krigstein
+Carl Barks
+Harvey Kurtzman
+Jim Lee
+Joe Kubert
+Barry Windsor-Smith
+Gil Kane
+Alex Toth
+Reed Crandall
+Al Williamson
+Jack Cole
+Jean Giraud
+Arthur Adams
+Todd McFarlane
+Bernie Wrightson
+John Buscema
+John Severin
+Brian Michael Bendis
+Joe Madureira
+George Pérez
+Bill Sienkiewicz
+Gene Colan
+Alan Moore
+Joëlle Jones
+Daniel Clowes
+Jorge Jiménez
+Alex Ross
+Sana Takeda
+Simon Bisley
+Mike Mignola
+Rick Veitch
+Frank Quitely
+Dan Mora
+Dave Sim
+John Byrne
+Mike Allred
+John Cassaday
+Mike Zeck
+Andrea Mutti`;
 }
