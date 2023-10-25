@@ -105,9 +105,9 @@ export async function writeDraftFunction(req) {
     // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     const saveChunkToFirebase = await saveToFirebase(
-      `/${
-        process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-      }/${process.env.serverUid}/${req.body.userId}/quickDraft/context/draft`,
+      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+        process.env.serverUid
+      }/${req.body.userId}/quickDraft/context/draft`,
       `${newAccumulatedContent}…`
     );
     // console.log("saveChunkToFirebase");
@@ -115,9 +115,9 @@ export async function writeDraftFunction(req) {
   }
   newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
-    `/${
-      process.env.localAsyncTasks ? process.env.localAsyncTasks : "asyncTasks"
-    }/${process.env.serverUid}/${req.body.userId}/quickDraft/context/draft`,
+    `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+      process.env.serverUid
+    }/${req.body.userId}/quickDraft/context/draft`,
     `${newAccumulatedContent}}`
   );
   console.log("savedDraftToFirebase");
