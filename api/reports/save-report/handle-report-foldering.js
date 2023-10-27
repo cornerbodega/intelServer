@@ -26,8 +26,14 @@ export default async function handler(req, res) {
 
   console.log("addParentToFolder parentReportId");
   console.log(parentReportId);
-  await addParentToFolder(parentReportId);
+  // await addParentToFolder(parentReportId);
   // Add the (child) report to the folder
+  // async function createFolderIfNeeded({ parentReportId }) {
+  //   if (parentReportId) {
+  //   }
+  // }
+  await addParentToFolder(parentReportId);
+  // await createFolderIfNeeded({ parentReportId });
   await addChildReportToFolder({
     reportId,
     folderId: existingFolderId,

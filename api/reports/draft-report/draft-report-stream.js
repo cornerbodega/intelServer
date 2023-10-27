@@ -66,7 +66,7 @@ export async function writeDraftFunction(req) {
     },
     {
       role: "assistant",
-      content: `<div>
+      content: `<div id="report">
           <h2 id="reportTitle">Natural Language Processing (NLP) in the Modern Digital Landscape</h2>
           
           <h3 id="${generateUniqueID()}">Introduction:</h3>

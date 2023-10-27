@@ -84,9 +84,10 @@ export default function taskSchema() {
       ],
     },
     writeDraftReport: {
+      // 3. This one charges
       function: draftReportStreamHandler,
-      // endpoint: "/api/reports/draft-report/draft-report",
       inputs: [
+        "reportLength",
         "briefing",
         "expertises",
         "specializedTraining",
@@ -100,6 +101,7 @@ export default function taskSchema() {
       // function: quickDraftHandler,
       // endpoint: "/api/reports/draft-report/draft-report",
       inputs: [
+        "reportLength",
         "briefingInput",
         "userId",
         "draft",
@@ -114,14 +116,13 @@ export default function taskSchema() {
         {
           taskName: "generateExpertise",
           function: generateExpertiseHandler,
-          // endpoint: "/api/agents/add-agent/generate-expertise",
           inputs: ["briefingInput", "specializedTraining", "userId"],
           outputs: ["expertiseOutput"],
         },
         {
+          // 1. This one charges
           taskName: "writeQuickDraft",
           function: writeQuickDraftHandler,
-          // endpoint: "/api/reports/draft-report/draft-report",
           inputs: [
             "expertiseOutput",
             "briefingInput",
@@ -135,6 +136,7 @@ export default function taskSchema() {
     },
     continuum: {
       inputs: [
+        "reportLength",
         "parentReportId",
         "userId",
         "parentReportContent",
@@ -148,7 +150,6 @@ export default function taskSchema() {
         {
           taskName: "generateResearchLink",
           function: generateResearchLinkHandler,
-          // endpoint: "/api/reports/continua/generate-research-link",
           inputs: [
             "parentReportId",
             "userId",
@@ -158,9 +159,9 @@ export default function taskSchema() {
           outputs: ["researchLink"],
         },
         {
+          // 2. This one charges
           taskSchema: "steamContinuumDraft",
           function: streamContinuumDraftHandler,
-          // endpoint: "/api/reports/draft-report/draft-report",
           inputs: [
             "researchLink",
             "expertises",
@@ -190,14 +191,12 @@ export default function taskSchema() {
 
         {
           taskName: "getImagePromptForReport",
-          // endpoint: "/api/reports/save-report/generate-image-prompt-for-report",
           function: generateImagePromptForReportHandler,
           inputs: ["draft"],
           outputs: ["imageDescriptionResponseContent"],
         },
         {
           taskName: "generateReportImage",
-          // endpoint: "/api/reports/save-report/generate-report-image",
           function: generateReportImageHandler,
           inputs: ["imageDescriptionResponseContent", "userId"],
           outputs: ["imageUrl, draftTitle"],
@@ -238,17 +237,9 @@ export default function taskSchema() {
         {
           taskName: "saveLink",
           function: saveLinkHandler,
-          // endpoint: "/api/reports/save-report/save-links",
           inputs: ["parentReportId", "childReportId", "userId", "researchLink"],
           outputs: ["saveLinksData"],
         },
-        // {
-        //   taskName: "queueRegenerateFolderTask",
-        //   function: queueRegenerateFolderTaskHandler,
-        //   // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
-        //   inputs: ["folderId", "userId"],
-        //   outputs: [],
-        // },
       ],
     },
     finalizeAndVisualizeReport: {
@@ -466,19 +457,19 @@ export default function taskSchema() {
           outputs: ["childReportId"],
         },
 
-        {
-          taskName: "saveLinks",
-          function: saveLinksHandler,
-          // endpoint: "/api/reports/save-report/save-links",
-          inputs: [
-            "parentReportId",
-            "childReportId",
-            "highlightedText",
-            "elementId",
-            "userId",
-          ],
-          outputs: ["saveLinksData"],
-        },
+        // {
+        //   taskName: "saveLinks",
+        //   function: saveLinksHandler,
+        //   // endpoint: "/api/reports/save-report/save-links",
+        //   inputs: [
+        //     "parentReportId",
+        //     "childReportId",
+        //     "highlightedText",
+        //     "elementId",
+        //     "userId",
+        //   ],
+        //   outputs: ["saveLinksData"],
+        // },
         {
           taskName: "handleReportFoldering",
           function: handleReportFolderingHandler,
@@ -492,24 +483,24 @@ export default function taskSchema() {
           inputs: ["folderId", "userId"],
           outputs: [],
         },
-        {
-          taskName: "startGenerateContinuumTasks",
-          function: startGenerateContinuumTasksHandler,
-          // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
-          inputs: [
-            "childReportId",
-            "parentReportId",
-            "draft",
-            "userId",
-            "maxGenerations",
-            "currentGeneration",
-            "reportSummary",
-            "expertises",
-            "specializedTraining",
-            "agentId",
-          ],
-          outputs: ["currentGeneration"],
-        },
+        // {
+        //   taskName: "startGenerateContinuumTasks",
+        //   function: startGenerateContinuumTasksHandler,
+        //   // endpoint: "/api/reports/save-report/start-generate-continua-tasks",
+        //   inputs: [
+        //     "childReportId",
+        //     "parentReportId",
+        //     "draft",
+        //     "userId",
+        //     "maxGenerations",
+        //     "currentGeneration",
+        //     "reportSummary",
+        //     "expertises",
+        //     "specializedTraining",
+        //     "agentId",
+        //   ],
+        //   outputs: ["currentGeneration"],
+        // },
         {
           taskName: "queueRegenerateFolderTask",
           function: queueRegenerateFolderTaskHandler,
@@ -565,136 +556,6 @@ export default function taskSchema() {
             "folderDescription",
           ],
           outputs: [],
-        },
-      ],
-    },
-    doContinuum: {
-      inputs: [
-        "draft",
-        "agentId",
-        "expertises",
-        "reportSummary",
-        "userId",
-        "maxGenerations",
-        "currentGeneration",
-        "parentReportId",
-        "childReportId",
-      ],
-      outputs: [], // Specify outputs
-      subtasks: [
-        {
-          taskName: "generateResearchLinks",
-          function: generateResearchLinksHandler,
-          // endpoint: "/api/reports/continua/generate-research-links",
-          inputs: ["parentReportId", "childReportId", "draft"],
-          //   outputs: ["researchLinks"],
-          outputs: ["researchLink1", "researchLink2", "researchLink3"],
-        },
-
-        // write drafts 1, 2, and 3 in separate tasks
-        // save drafts 1, 2, and 3 in separate tasks
-        // make sure generations is passed and updated to avoid infinite loop
-
-        {
-          taskName: "writeDraftReport1",
-          function: draftReportHandler,
-          // endpoint: "/api/reports/draft-report/draft-report",
-          inputs: [
-            "reportSummary",
-            "agentId",
-            "researchLink1",
-            "expertises",
-            "specializedTraining",
-            "feedback",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: ["draft1", "currentGeneration"],
-        },
-        {
-          taskName: "queueSaveReport1Task",
-          function: queueSaveReportTaskHandler,
-          // endpoint: "/api/reports/continua/queue-save-report-task",
-          inputs: [
-            "draft1",
-            "researchLink1",
-            "agentId",
-            "expertises",
-            "specializedTraining",
-            "userId",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: [],
-          subtasks: [],
-        },
-        {
-          taskName: "writeDraftReport2",
-          // endpoint: "/api/reports/draft-report/draft-report",
-          function: draftReportHandler,
-          inputs: [
-            "reportSummary",
-            "agentId",
-            "researchLink2",
-            "expertises",
-            "specializedTraining",
-            "feedback",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: ["draft2", "currentGeneration"],
-        },
-        {
-          taskName: "queueSaveReport2Task",
-          function: queueSaveReportTaskHandler,
-          // endpoint: "/api/reports/continua/queue-save-report-task",
-          inputs: [
-            "draft2",
-            "researchLink2",
-            "agentId",
-            "expertises",
-            "specializedTraining",
-            "userId",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: [],
-          subtasks: [],
-        },
-
-        {
-          taskName: "writeDraftReport3",
-          function: draftReportHandler,
-          // endpoint: "/api/reports/draft-report/draft-report",
-          inputs: [
-            "reportSummary",
-            "agentId",
-            "researchLink3",
-            "expertises",
-            "specializedTraining",
-            "feedback",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: ["draft3", "currentGeneration"],
-        },
-
-        {
-          taskName: "queueSaveReport3Task",
-          function: queueSaveReportTaskHandler,
-          // endpoint: "/api/reports/continua/queue-save-report-task",
-          inputs: [
-            "draft3",
-            "researchLink3",
-            "agentId",
-            "expertises",
-            "specializedTraining",
-            "userId",
-            "maxGenerations",
-            "currentGeneration",
-          ],
-          outputs: [],
-          subtasks: [],
         },
       ],
     },
