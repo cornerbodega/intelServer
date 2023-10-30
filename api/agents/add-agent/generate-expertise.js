@@ -14,6 +14,9 @@ export default async function generateExpertiseHandler(req, res) {
   console.log(req);
   console.log("Input:");
   console.log(req.body);
+  if (req.body.existingExpertise) {
+    return { expertiseOutput: req.body.existingExpertise };
+  }
   const expertiseInput = get(req, "body.briefingInput");
   // const { expertiseInput } = req.body;
   console.log("GENERATE EXPERTISE FUNCTION");
@@ -47,11 +50,17 @@ export default async function generateExpertiseHandler(req, res) {
     .catch((error) => console.error(error));
   console.log("expertiseCompletion");
   console.log(expertiseCompletion);
-  const expertiseResponse = JSON.parse(
-    expertiseCompletion.choices[0].message.content
-  );
-  console.log("Output: create agent expertiseResponse");
-  console.log(expertiseResponse);
+  try {
+    const expertiseResponse = JSON.parse(
+      expertiseCompletion.choices[0].message.content
+    );
+    console.log("Output: create agent expertiseResponse");
+    console.log(expertiseResponse);
 
-  return { expertiseOutput: expertiseResponse };
+    return { expertiseOutput: expertiseResponse };
+  } catch (error) {
+    console.log("error 531: expertiseCompletion is not JSON");
+    console.log(expertiseCompletion);
+    return { expertiseOutput: ["Entrepreneurship"] };
+  }
 }

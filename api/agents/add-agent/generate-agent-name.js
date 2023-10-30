@@ -7,16 +7,30 @@ import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
+import { getSupabase } from "../../../utils/supabase.js";
 export default async function generateAgentNameHandler(req, res) {
+  const supabase = getSupabase();
   console.log("GENERATE EXPERTISE ENDPOINT");
   console.log("req.body");
   console.log(req.body);
+  const existingAgentId = req.body.existingAgentId;
+  if (existingAgentId) {
+    // get existing agent name
+    const { data: existingAgentData, error: existingAgentError } =
+      await supabase
+        .from("agents")
+        .select("agentName")
+        .eq("agentId", existingAgentId);
+    if (existingAgentError) {
+      console.log("error getting existingAgentData");
+      console.log(existingAgentError);
+    }
+    return { agentName: existingAgentData[0].agentName };
+  }
   const expertiseOutput = get(req, "body.expertiseOutput");
   console.log("GENERATE AGENT NAME FUNCTION");
   console.log("input: expertiseOutput");
   console.log(expertiseOutput);
-
   const expertises = expertiseOutput.filter((str) => str !== "");
 
   async function generateAnimalName() {

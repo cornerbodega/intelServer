@@ -6,19 +6,19 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 let cachedCredential = null;
 
 export default async function saveToFirebase(table, dataToSave) {
-  console.log("saveToFirebase");
+  // console.log("saveToFirebase");
 
   if (!cachedCredential) {
     cachedCredential = await signServerIntoFirebase();
   }
-  console.log("userCredential");
-  console.log(cachedCredential.user.uid);
+  // console.log("userCredential");
+  // console.log(cachedCredential.user.uid);
 
   try {
-    console.log("table");
-    console.log(table);
-    console.log("dataToSave");
-    console.log(dataToSave);
+    // console.log("table");
+    // console.log(table);
+    // console.log("dataToSave");
+    // console.log(dataToSave);
     const tableRef = ref(db, table);
     return set(tableRef, dataToSave);
   } catch (error) {

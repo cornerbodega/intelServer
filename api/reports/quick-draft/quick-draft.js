@@ -1,60 +1,39 @@
 import OpenAI from "openai";
 // import { saveToFirebase } from "../../../utils/saveToFirebase.js";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
+import saveToSupabase from "../../../utils/saveToSupabase.js";
+import getReportLengthToWordCount from "../../../utils/constants/getReportLengthToWordCount.js";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function writeDraftFunction(req) {
-  console.log("WRITE DRAFT FUNCTION INPUT:");
+  console.log("WRITE QUICK DRAFT FUNCTION INPUT:");
   console.log(req.body);
-  let researchLink = {};
-  if (req.body.researchLink) {
-    researchLink = req.body.researchLink;
-  }
-  console.log("researchLink");
-  console.log(researchLink);
-  // if (req.body.researchLink2) {
-  //   researchLink = req.body.researchLink2;
-  // }
-  // if (req.body.researchLink3) {
-  //   researchLink = req.body.researchLink3;
-  // }
-  let briefing = req.body.briefing;
-  if (researchLink.researchQuestion) {
-    briefing = researchLink.researchQuestion;
-  }
+
+  let { briefingInput, reportLength } = req.body;
+  const briefing = briefingInput;
   if (!briefing) {
-    console.log("error 544: where is the researchquesiton");
+    console.log("Write Quick Draft Error 544: Where is the researchquesiton");
     return;
   }
+  const expertises = req.body.expertiseOutput;
+  let expertiseString = expertises[0];
 
-  let expertiseString = req.body.expertises[0];
+  if (expertises.length > 1) {
+    expertiseString += " and " + expertises[1];
+  }
+  if (expertises.length > 2) {
+    expertiseString += " and " + expertises[2];
+  }
+  const reportLengthToWordCount = getReportLengthToWordCount();
+  console.log("reportLengthToWordCount");
+  console.log(reportLengthToWordCount);
+  if (!reportLength) {
+    reportLength = "short";
+  }
+  const reportWordCount = reportLengthToWordCount[reportLength];
 
-  if (req.body.expertises.length > 1) {
-    expertiseString += " and " + req.body.expertises[1];
-  }
-  if (req.body.expertises.length > 2) {
-    expertiseString += " and " + req.body.expertises[2];
-  }
-  let specializedTrainingString = "";
-  if (req.body.specializedTraining) {
-    specializedTrainingString += `${req.body.specializedTraining}.`;
-  }
-  if (specializedTrainingString.length > 0) {
-    console.log("specializedTrainingString");
-    console.log(specializedTrainingString);
-  }
-  // agents' areas of expertise
-  // agents' specialized training
-  // parent report summary aka "context"
-  // parent report sanitized briefing
-  // highlighted text
-  // previous reports titles
-  let reportSummary = "";
-  if (req.body.reportSummary) {
-    reportSummary = `Given the context of this report: ${req.body.reportSummary}, please generate a report on the following topic:`;
-  }
   let messages = [
     {
       role: "system",
@@ -62,15 +41,12 @@ export async function writeDraftFunction(req) {
     },
     {
       role: "user",
-      content: `what are the applications of Natural Language Processing in the modern digital landscape?`,
+      content: `In 80 words: what are the applications of Natural Language Processing in the modern digital landscape?`,
     },
     {
       role: "assistant",
       content: `<div id="report">
           <h2 id="reportTitle">Natural Language Processing (NLP) in the Modern Digital Landscape</h2>
-          
-          <h3 id="${generateUniqueID()}">Introduction:</h3>
-          <p id="${generateUniqueID()}">Natural Language Processing, a subfield of AI, focuses on enabling machines to understand and interpret human language. Its applications in the digital landscape are vast and transformative.</p>
           
           <h3 id="${generateUniqueID()}">Applications:</h3>
           <ul id="${generateUniqueID()}">
@@ -81,23 +57,38 @@ export async function writeDraftFunction(req) {
               <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Translation Services:</strong> Real-time translation and transcription services, such as Google Translate, use NLP for accurate translations.</li>
           </ul>
           
-          <h3 id="${generateUniqueID()}">Conclusion:</h3>
-          <p id="${generateUniqueID()}">NLP's applications are vast and integral to many services in the modern digital age. Its capabilities have transformed how businesses interact with consumers and how users access and interpret information.</p>
       </div>`,
     },
   ];
 
   messages.push({
     role: "user",
-    content: `${reportSummary} ${briefing}?`,
+    content: `In ${reportWordCount} words: ${briefing}?`,
   });
-  const feedback = req.body.feedback;
-  if (feedback && feedback.length > 0) {
-    messages = [...messages, ...feedback];
+  if (req.body.feedbacks && req.body.feedbacks.length > 0) {
+    for (let i = 0; i < req.body.feedbacks.length; i++) {
+      messages.push({
+        role: "assistant",
+        content: req.body.feedbacks[i].draft,
+      });
+      messages.push({
+        role: "user",
+        content: req.body.feedbacks[i].feedback,
+      });
+    }
   }
+  // if (req.body.feedback && req.body.feedback.length > 0) {
+  //   const feedback = { role: "user", content: `${req.body.feedback}` };
+  //   const currentDraft = [
+  //     { role: "assistant", content: req.body.previousDraft },
+  //   ];
+  //   messages = [...messages, ...currentDraft, feedback];
+  // }
+  console.log("write quick draft messages");
+  console.log(messages);
   const stream = await openai.chat.completions.create({
-    // model: "gpt-3.5-turbo",
     model: "gpt-4",
+    // model: "gpt-3.5-turbo",
     messages,
     stream: true,
   });
@@ -111,56 +102,37 @@ export async function writeDraftFunction(req) {
     const saveChunkToFirebase = await saveToFirebase(
       `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
         process.env.serverUid
-      }/${req.body.userId}/writeDraftReport/context/draft`,
+      }/${req.body.userId}/quickDraft/context/draft`,
       `${newAccumulatedContent}…`
     );
     // console.log("saveChunkToFirebase");
     // console.log(saveChunkToFirebase);
   }
+  newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
-    `/${
-      process.env.NEXT_PUBLIC_env
-        ? process.env.NEXT_PUBLIC_env
-        : "localAsyncTasks"
-    }/${process.env.serverUid}/${
-      req.body.userId
-    }/writeDraftReport/context/draft`,
-    `${newAccumulatedContent}${" ".repeat(3)}`
+    `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+      process.env.serverUid
+    }/${req.body.userId}/quickDraft/context/draft`,
+    `${newAccumulatedContent}}`
   );
+  console.log("savedDraftToFirebase");
+
+  return newAccumulatedContent;
 }
-export default async function draftReportHandler(req, res) {
-  console.log("Draft Report Endpoint");
+export default async function quickDraftReportHandler(req, res) {
+  console.log("Quick Draft Report Endpoint");
   console.log(req.body);
-  let draftVariable = "draft";
+
   let draftRequestObj = { ...req };
 
-  // if (req.body.researchLink) {
-  //   draftVariable = "draft";
-  // }
-  // if (req.body.researchLink2) {
-  //   draftVariable = "draft2";
-  // }
-  // if (req.body.researchLink3) {
-  //   draftVariable = "draft3";
-  // }
-  // if (req.method === "POST") {
   const draftResponseContent = await writeDraftFunction(draftRequestObj);
   if (draftResponseContent) {
     console.log(" draft report  endpoint");
-    console.log(draftVariable);
-    const responseObj = {
-      message: "Success",
-      currentGeneration: +req.body.currentGeneration + 1,
-    };
-    responseObj[draftVariable] = draftResponseContent;
-    return responseObj;
-  } // Process a POST request
+
+    return { draft: draftResponseContent };
+  }
 }
-// else {
-//   return res.send(500);
-//   // Handle any other HTTP method
-// }
-// }
+
 function generateUniqueID() {
   return Math.random().toString(36).substr(2, 9);
 }

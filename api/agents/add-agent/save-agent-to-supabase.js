@@ -1,9 +1,14 @@
 // import { createClient } from "@supabase/supabase-js";
 import saveToSupabase from "../../../utils/saveToSupabase.js";
+
 export default async function saveAgentToSupabaseHandler(req, res) {
   console.log("UPLOAD AGENT PROFILE PIC ENDPOINT");
   console.log("Input:");
   console.log(req.body);
+  const existingAgentId = req.body.existingAgentId;
+  if (existingAgentId) {
+    return { agentId: existingAgentId };
+  }
   const expertise1 = req.body.expertiseOutput[0];
   let expertise2, expertise3;
   if (req.body.expertiseOutput[1]) {

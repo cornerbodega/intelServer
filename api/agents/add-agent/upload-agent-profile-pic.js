@@ -15,11 +15,26 @@ cloudinary.config({
   api_secret: "GfxhZesKW1PXljRLIh5Dz6-3XgM",
   secure: true,
 });
-
+import { getSupabase } from "../../../utils/supabase.js";
 export default async function uploadAgentProfilePicHandler(req, res) {
+  const supabase = getSupabase();
   console.log("UPLOAD AGENT PROFILE PIC ENDPOINT");
   console.log("Input:");
   console.log(req.body);
+  const existingAgentId = req.body.existingAgentId;
+  if (existingAgentId) {
+    // get existing agent name
+    const { data: existingAgentData, error: existingAgentError } =
+      await supabase
+        .from("agents")
+        .select("profilePicUrl")
+        .eq("agentId", existingAgentId);
+    if (existingAgentError) {
+      console.log("error getting existingAgentData");
+      console.log(existingAgentError);
+    }
+    return { profilePicUrl: existingAgentData[0].profilePicUrl };
+  }
   if (!req.body.imageUrl) {
     return { error: "No image url provided" };
   }

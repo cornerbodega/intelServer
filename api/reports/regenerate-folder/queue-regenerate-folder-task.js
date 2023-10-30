@@ -2,7 +2,7 @@
 
 // import { max } from "lodash";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
-
+import { getSupabase } from "../../../utils/supabase.js";
 export default async function handler(req, res) {
   console.log("QUEUE SAVE REGENERATE FOLDER TASK ENDPOINT");
   // const { draft, researchLink1, researchLink2, researchLink3 } = req.body;
@@ -22,6 +22,7 @@ export default async function handler(req, res) {
   // }
   // check if the folder id has a folderPicUrl
   // async function getExistingFolderData() {
+  const supabase = getSupabase();
   try {
     const { foldersResponse, error } = await supabase
       .from("folders")

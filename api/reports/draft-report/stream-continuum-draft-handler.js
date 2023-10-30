@@ -9,6 +9,7 @@ import { onValue, set } from "firebase/database";
 // import firebase from "./firebase.js";
 import firebase from "../../../utils/firebase.js";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
+import getReportLengthToWordCount from "../../../utils/constants/getReportLengthToWordCount.js";
 // import { isActiveTab } from "./activeTab";
 const db = firebase.db;
 const ref = firebase.ref;
@@ -18,6 +19,10 @@ export default async function draftReportHandler(req, res) {
   console.log("STREAM CONTINUUM DRAFT FUNCTION INPUT:");
   console.log(req.body);
   const userId = req.body.userId;
+  let reportLength = req.body.reportLength;
+  if (!reportLength) {
+    reportLength = "short";
+  }
   let researchLink = {};
   if (req.body.researchLink) {
     researchLink = req.body.researchLink;
@@ -50,20 +55,12 @@ export default async function draftReportHandler(req, res) {
   if (req.body.specializedTraining) {
     specializedTrainingString += `${req.body.specializedTraining}.`;
   }
-  if (specializedTrainingString.length > 0) {
-    console.log("specializedTrainingString");
-    console.log(specializedTrainingString);
+
+  const reportLengthToWordCount = getReportLengthToWordCount();
+  if (!reportLength) {
+    reportLength = "short";
   }
-  // agents' areas of expertise
-  // agents' specialized training
-  // parent report summary aka "context"
-  // parent report sanitized briefing
-  // highlighted text
-  // previous reports titles
-  let reportSummary = "";
-  if (req.body.reportSummary) {
-    reportSummary = `Given the context of this report: ${req.body.reportSummary}, please generate a report on the following topic:`;
-  }
+  const reportWordCount = reportLengthToWordCount[reportLength];
   let messages = [
     {
       role: "system",
@@ -71,7 +68,7 @@ export default async function draftReportHandler(req, res) {
     },
     {
       role: "user",
-      content: `what are the applications of Natural Language Processing in the modern digital landscape?`,
+      content: `In 80 words: what are the applications of Natural Language Processing in the modern digital landscape?`,
     },
     {
       role: "assistant",
@@ -98,7 +95,7 @@ export default async function draftReportHandler(req, res) {
 
   messages.push({
     role: "user",
-    content: `${reportSummary} ${briefing}?`,
+    content: `In ${reportWordCount} words: ${briefing}?`,
   });
   const feedback = req.body.feedback;
   if (feedback && feedback.length > 0) {
