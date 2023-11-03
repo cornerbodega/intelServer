@@ -36,9 +36,9 @@ export default async function draftReportHandler(req, res) {
   //   researchLink = req.body.researchLink3;
   // }
 
-  const briefing = researchLink.researchQuestion;
+  const briefingInput = researchLink.researchQuestion;
 
-  if (!briefing) {
+  if (!briefingInput) {
     console.log("error 544: where is the researchquesiton");
     return;
   }
@@ -95,7 +95,7 @@ export default async function draftReportHandler(req, res) {
 
   messages.push({
     role: "user",
-    content: `In ${reportWordCount} words: ${briefing}?`,
+    content: `In ${reportWordCount} words: ${briefingInput}?`,
   });
   const feedback = req.body.feedback;
   if (feedback && feedback.length > 0) {

@@ -12,8 +12,7 @@ export async function writeDraftFunction(req) {
   console.log(req.body);
 
   let { briefingInput, reportLength } = req.body;
-  const briefing = briefingInput;
-  if (!briefing) {
+  if (!briefingInput) {
     console.log("Write Quick Draft Error 544: Where is the researchquesiton");
     return;
   }
@@ -63,7 +62,7 @@ export async function writeDraftFunction(req) {
 
   messages.push({
     role: "user",
-    content: `In ${reportWordCount} words: ${briefing}?`,
+    content: `In ${reportWordCount} words: ${briefingInput}?`,
   });
   if (req.body.feedbacks && req.body.feedbacks.length > 0) {
     for (let i = 0; i < req.body.feedbacks.length; i++) {

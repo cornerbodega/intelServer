@@ -173,7 +173,7 @@ export default function taskSchema() {
             "parentReportContent",
             "existingHyperlinks",
           ],
-          outputs: ["researchLink"],
+          outputs: ["researchLink", "briefingInput"],
         },
         {
           // 2. This one charges
@@ -245,7 +245,7 @@ export default function taskSchema() {
             "userId",
             "reportPicUrl",
             "reportSummary",
-            "briefing",
+            "briefingInput",
             "draftTitle",
             "imageDescriptionResponseContent",
           ],
@@ -263,7 +263,7 @@ export default function taskSchema() {
     finalizeAndVisualizeReport: {
       inputs: [
         "draft",
-        "briefing",
+        "briefingInput",
         "userId",
         "parentReportId",
         "expertiseOutput",
@@ -274,7 +274,7 @@ export default function taskSchema() {
         {
           taskName: "saveReportWithoutImage",
           function: saveReportToSupabaseHandler,
-          inputs: ["draft", "userId", "briefing"],
+          inputs: ["draft", "userId", "briefingInput"],
           outputs: ["childReportId"],
         },
         {
@@ -330,7 +330,7 @@ export default function taskSchema() {
             "userId",
             "reportPicUrl",
             "reportSummary",
-            "briefing",
+            "briefingInput",
             "draftTitle",
             "imageDescriptionResponseContent",
           ],
@@ -402,7 +402,7 @@ export default function taskSchema() {
             "userId",
             "reportPicUrl",
             "reportSummary",
-            "briefing",
+            "briefingInput",
             "draftTitle",
             "imageDescriptionResponseContent",
           ],
@@ -479,7 +479,7 @@ export default function taskSchema() {
             "userId",
             "reportPicUrl",
             "reportSummary",
-            "briefing",
+            "briefingInput",
             "draftTitle",
             "imageDescriptionResponseContent",
           ],
@@ -557,7 +557,7 @@ export default function taskSchema() {
     //         "userId",
     //         "reportPicUrl",
     //         "reportSummary",
-    //         "briefing",
+    //         "briefingInput",
     //         "draftTitle",
     //         "imageDescriptionResponseContent",
     //       ],

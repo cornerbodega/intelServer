@@ -3,13 +3,13 @@ export default async function handler(req, res) {
   console.log("UPLOAD AGENT PROFILE PIC ENDPOINT");
   console.log("Input:");
   console.log(req.body);
-  const { draft, agentId } = req.body;
-  async function saveReportFunction({ draft, agentId, briefing }) {
+  const { draft, agentId, briefingInput } = req.body;
+  async function saveReportFunction({ draft, agentId, briefingInput }) {
     console.log("save draft function");
     // console.log(draft);
     const reportPicUrl = req.body.reportPicUrl;
     const draftTitle = req.body.draftTitle;
-    // const briefing = req.body.briefing;
+    // const briefingInput = req.body.briefingInput;
     const reportSummary = req.body.reportSummary;
     const userId = req.body.userId;
     const imageDescriptionResponseContent =
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     newReportModel.reportPicUrl = reportPicUrl;
     newReportModel.reportTitle = draftTitle;
     newReportModel.reportContent = draft;
-    newReportModel.briefing = briefing;
+    newReportModel.briefingInput = briefingInput;
     newReportModel.agentId = agentId;
     newReportModel.reportSummary = reportSummary;
     newReportModel.userId = userId;
@@ -41,6 +41,10 @@ export default async function handler(req, res) {
     const childReportId = saveReportData[0].reportId;
     return childReportId;
   }
-  const childReportId = await saveReportFunction({ draft, agentId });
+  const childReportId = await saveReportFunction({
+    draft,
+    agentId,
+    briefingInput,
+  });
   return { childReportId };
 }

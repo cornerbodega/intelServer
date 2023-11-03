@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   // console.log(draft);
   const reportPicUrl = req.body.reportPicUrl;
   const draftTitle = req.body.draftTitle;
-  const briefing = req.body.briefing;
+  const briefingInput = req.body.briefingInput;
   const reportSummary = req.body.reportSummary;
   const userId = req.body.userId;
   const imageDescriptionResponseContent =
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   newReportModel.reportPicUrl = reportPicUrl;
   newReportModel.reportTitle = draftTitle;
   newReportModel.reportContent = draft;
-  newReportModel.briefing = briefing;
+  newReportModel.briefingInput = briefingInput;
   newReportModel.agentId = agentId;
   newReportModel.reportSummary = reportSummary;
   newReportModel.userId = userId;

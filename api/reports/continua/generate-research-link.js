@@ -121,7 +121,10 @@ export default async function handler(req, res) {
   // } else if (typeof suggestionResponseContent === "string") {
   //   researchLinksArray = JSON.parse(researchLinks);
   // }
-  const researchLink = { ...researchLinks[0] };
+  const researchLink = {
+    ...researchLinks[0],
+    briefingInput: researchLinks[0].researchQuestion,
+  };
   // const researchLink2 = { ...researchLinks[1], ...parentAndChildReportIds };
   // const researchLink3 = { ...researchLinks[2], ...parentAndChildReportIds };
   const responseObj = {
