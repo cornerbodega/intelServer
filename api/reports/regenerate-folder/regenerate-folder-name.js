@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     // Make a call to the AI to generate a folder name and image
     try {
       const chat_completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
         messages: [
           {
             role: "system",

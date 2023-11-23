@@ -1,3 +1,4 @@
+import summarize10kHandler from "../api/stock-sips/generate-stock-script.js";
 import generateAgentNameHandler from "../api/agents/add-agent/generate-agent-name.js";
 import generateExpertiseHandler from "../api/agents/add-agent/generate-expertise.js";
 import generateAgentProfilePicHandler from "../api/agents/add-agent/generate-agent-profile-pic.js";
@@ -23,6 +24,13 @@ import queueRegenerateFolderTaskHandler from "../api/reports/regenerate-folder/q
 import writeQuickDraftHandler from "../api/reports/quick-draft/quick-draft.js";
 import saveFolderIdToFirebaseHandler from "../api/reports/save-report/save-folder-id-to-firebase.js";
 import chargeTokensHandler from "../api/reports/charge-tokens/charge-tokens.js";
+import saveYoutubeScriptToSupabaseHandler from "../api/stock-sips/save-youtube-script-to-supabase.js";
+import { generateTeaScriptHandler } from "../api/stock-sips/generate-tea-script.js";
+import generateStockScriptHandler from "../api/stock-sips/generate-stock-script.js";
+import { generateSnackScriptHandler } from "../api/stock-sips/generate-snack-script.js";
+import assembleYoutubeScriptHandler from "../api/stock-sips/assemble-youtube-script.js";
+import { generateEpisodeNameHandler } from "../api/stock-sips/generate-episode-name.js";
+import getFinancialStatementsHandler from "../api/stock-sips/get-financial-statements.js";
 export default function taskSchema() {
   return {
     addAgent: {
@@ -661,6 +669,114 @@ export default function taskSchema() {
             "folderId",
             "folderName",
             "folderDescription",
+          ],
+          outputs: [],
+        },
+      ],
+    },
+    generateYoutubeScript: {
+      inputs: [
+        "userId",
+        "price",
+        "shares",
+        "yahooRatios",
+        "companyName",
+        "companyTicker",
+        "teaName",
+        "snackName",
+        "nextStock",
+        "nextTea",
+        "nextSnack",
+        "channelName",
+        "showName",
+        "russel1000History",
+        "stockHistory",
+      ],
+      outputs: [],
+      subtasks: [
+        {
+          taskName: "getFinancialStatements",
+          function: getFinancialStatementsHandler,
+          inputs: ["companyTicker"],
+          outputs: ["financialStatements"],
+        },
+        {
+          taskName: "generateStockScript",
+          function: generateStockScriptHandler,
+          inputs: [
+            "companyName",
+            "companyTicker",
+            "price",
+            "shares",
+            "yahooRatios",
+            "russel1000History",
+            "stockHistory",
+            "financialStatements",
+          ],
+          outputs: ["stockScipt"],
+        },
+        {
+          taskName: "generateTeaScript",
+          function: generateTeaScriptHandler,
+          inputs: ["teaName"],
+          outputs: ["teaScript"],
+        },
+        {
+          taskName: "generateSnackScript",
+          function: generateSnackScriptHandler,
+          inputs: ["snackName"],
+          outputs: ["snackScript"],
+        },
+        {
+          taskName: "assembleScript",
+          function: assembleYoutubeScriptHandler,
+          inputs: [
+            "stockScript",
+            "teaScript",
+            "snackScript",
+            "nextStock",
+            "nextTea",
+            "nextSnack",
+            "snackName",
+            "companyName",
+            "teaName",
+            "showName",
+            "channelName",
+          ],
+          outputs: ["episodeScript"],
+        },
+        // {
+        //   taskName: "generateEpisodeScriptWithImageDescriptions",
+        //   function: generateEpisodeScriptWithImageDescriptionsHandler,
+        //   inputs: ["episodeScript"],
+        //   outputs: ["episodeScriptWithImageDescriptions"],
+        // },
+        // {
+        //   taskName: "genereateEpisodeScriptHtml",
+        //   function: generateEpisodeScriptHtmlHandler,
+        //   inputs: ["episodeScriptWithImageDescriptions"],
+        //   outputs: ["episodeScriptHtml"],
+        // },
+        {
+          taskName: "generateEpisodeName",
+          function: generateEpisodeNameHandler,
+          inputs: ["teaName", "companyTicker", "companyName", "snackName"],
+          outputs: ["episodeName"],
+        },
+        {
+          taskName: "saveYoutubeScriptToSupabase",
+          function: saveYoutubeScriptToSupabaseHandler,
+          inputs: [
+            "userId",
+            "companyName",
+            "companyTicker",
+            "teaName",
+            "snackName",
+            "episodeName",
+            "episodeScript",
+            // "episodeScriptHtml",
+            "channelName",
+            "showName",
           ],
           outputs: [],
         },
