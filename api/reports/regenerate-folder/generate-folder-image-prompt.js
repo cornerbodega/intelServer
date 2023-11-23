@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         },
         {
           role: "user",
-          content: `Produce a visually engaging prompt for Dall-E that encapsulates the essence of the report titled: ${folderDescription}. 
+          content: `Produce a visually engaging prompt for Dall-E that encapsulates the essence of the report titled: ${folderDescription}, synthwave style. 
             ", "
           )}`,
         },

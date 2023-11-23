@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     },
     {
       role: "user",
-      content: `In less than 300 characters: Produce a visually engaging prompt for Dall-E that encapsulates the essence of the report titled: ${draftTitle}.`,
+      content: `In less than 300 characters: Produce a visually engaging prompt for Dall-E that encapsulates the essence of the report titled: ${draftTitle}. Synthwave style.`,
     },
   ];
 
