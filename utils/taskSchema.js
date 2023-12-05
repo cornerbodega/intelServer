@@ -7,6 +7,7 @@ import saveAgentToSupabaseHandler from "../api/agents/add-agent/save-agent-to-su
 import generateImagePromptForReportHandler from "../api/reports/save-report/generate-image-prompt-for-report.js";
 import generateReportImageHandler from "../api/reports/save-report/generate-report-image.js";
 import uploadReportImageToCloudinaryHandler from "../api/reports/save-report/upload-report-image-to-cloudinary.js";
+import uploadImageToGcsHandler from "../api/reports/save-report/upload-image-to-gcs/upload-image-to-gcs.js";
 import generateReportSummaryHandler from "../api/reports/save-report/generate-report-summary.js";
 import saveReportToSupabaseHandler from "../api/reports/save-report/save-report-to-supabase.js";
 import updateReportInSupabaseHandler from "../api/reports/save-report/update-report-in-supabase.js";
@@ -59,12 +60,18 @@ export default function taskSchema() {
           outputs: ["imageUrl"],
         },
         {
-          taskName: "uploadAgentProfilePic",
-          function: uploadAgentProfilePicHandler,
-          // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
-          inputs: ["imageUrl", "userId"],
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "agentName"],
           outputs: ["profilePicUrl"],
         },
+        // {
+        //   taskName: "uploadAgentProfilePic",
+        //   function: uploadAgentProfilePicHandler,
+        //   // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
+        //   inputs: ["imageUrl", "userId"],
+        //   outputs: ["profilePicUrl"],
+        // },
         {
           taskName: "saveAgent",
           function: saveAgentToSupabaseHandler,
@@ -159,6 +166,42 @@ export default function taskSchema() {
         },
       ],
     },
+    regenerateReportImage: {
+      inputs: ["childReportId", "draft", "userId"],
+      outputs: [],
+      subtasks: [
+        {
+          taskName: "getImagePromptForReport",
+          function: generateImagePromptForReportHandler,
+          inputs: ["draft"],
+          outputs: ["imageDescriptionResponseContent", "draftTitle"],
+        },
+        {
+          taskName: "generateReportImage",
+          function: generateReportImageHandler,
+          inputs: ["imageDescriptionResponseContent", "userId"],
+          outputs: ["imageUrl, draftTitle"],
+        },
+        {
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "draftTitle"],
+          outputs: ["reportPicUrl"],
+        },
+
+        {
+          taskName: "updateReportInSupabase",
+          function: updateReportInSupabaseHandler,
+          endpoint: "/api/reports/save-report/save-report-to-supabase",
+          inputs: [
+            "childReportId",
+            "reportPicUrl",
+            "imageDescriptionResponseContent",
+          ],
+          outputs: ["childReportId"],
+        },
+      ],
+    },
     continuum: {
       inputs: [
         "reportLength",
@@ -228,11 +271,9 @@ export default function taskSchema() {
           outputs: ["imageUrl, draftTitle"],
         },
         {
-          taskName: "uploadReportImageToCloudinary",
-          function: uploadReportImageToCloudinaryHandler,
-          endpoint:
-            "/api/reports/save-report/upload-report-image-to-cloudinary",
-          inputs: ["imageUrl"],
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "draftTitle"],
           outputs: ["reportPicUrl"],
         },
         {
@@ -313,13 +354,19 @@ export default function taskSchema() {
           outputs: ["imageUrl, draftTitle"],
         },
         {
-          taskName: "uploadReportImageToCloudinary",
-          function: uploadReportImageToCloudinaryHandler,
-          endpoint:
-            "/api/reports/save-report/upload-report-image-to-cloudinary",
-          inputs: ["imageUrl"],
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "draftTitle"],
           outputs: ["reportPicUrl"],
         },
+        // {
+        //   taskName: "uploadReportImageToCloudinary",
+        //   function: uploadReportImageToCloudinaryHandler,
+        //   endpoint:
+        //     "/api/reports/save-report/upload-report-image-to-cloudinary",
+        //   inputs: ["imageUrl"],
+        //   outputs: ["reportPicUrl"],
+        // },
         {
           taskName: "getReportSummary",
           function: generateReportSummaryHandler,
@@ -369,7 +416,7 @@ export default function taskSchema() {
           taskName: "generateAgentName",
           function: generateAgentNameHandler,
           // endpoint: "/api/agents/add-agent/generate-agent-name",
-          inputs: ["expertiseOutput", "specializedTraining", "userId"],
+          inputs: ["expertiseOutput", "userId"],
           outputs: ["agentName", "bio"],
         },
         {
@@ -381,9 +428,9 @@ export default function taskSchema() {
         },
         {
           taskName: "uploadAgentProfilePic",
-          function: uploadAgentProfilePicHandler,
+          function: uploadImageToGcsHandler,
           // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
-          inputs: ["imageUrl", "userId"],
+          inputs: ["imageUrl", "agentName"],
           outputs: ["profilePicUrl"],
         },
         {
@@ -461,12 +508,18 @@ export default function taskSchema() {
           inputs: ["imageDescriptionResponseContent", "userId"],
           outputs: ["imageUrl, draftTitle"],
         },
+        // {
+        //   taskName: "uploadReportImageToCloudinary",
+        //   function: uploadReportImageToCloudinaryHandler,
+        //   endpoint:
+        //     "/api/reports/save-report/upload-report-image-to-cloudinary",
+        //   inputs: ["imageUrl"],
+        //   outputs: ["reportPicUrl"],
+        // },
         {
-          taskName: "uploadReportImageToCloudinary",
-          function: uploadReportImageToCloudinaryHandler,
-          endpoint:
-            "/api/reports/save-report/upload-report-image-to-cloudinary",
-          inputs: ["imageUrl"],
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "draftTitle"],
           outputs: ["reportPicUrl"],
         },
         {
@@ -653,12 +706,18 @@ export default function taskSchema() {
           outputs: ["imageUrl"],
         },
         {
-          taskName: "uploadFolderImageToCloudinary",
-          function: uploadFolderImageToCloudinaryHandler,
-          // endpoint: "/api/reports/save-report/upload-folder-image-to-cloudinary",
-          inputs: ["imageUrl"],
+          taskName: "uploadReportImageToGcs",
+          function: uploadImageToGcsHandler,
+          inputs: ["imageUrl", "folderImageResponse"],
           outputs: ["folderPicUrl"],
         },
+        // {
+        //   taskName: "uploadFolderImageToCloudinary",
+        //   function: uploadFolderImageToCloudinaryHandler,
+        //   // endpoint: "/api/reports/save-report/upload-folder-image-to-cloudinary",
+        //   inputs: ["imageUrl"],
+        //   outputs: ["folderPicUrl"],
+        // },
         {
           taskName: "saveFolderNameAndImage",
           function: saveFolderNameAndImageHandler,

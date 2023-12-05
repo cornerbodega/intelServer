@@ -11,7 +11,8 @@ export default async function handler(req, res) {
   const aiImageResponse = await openai.images.generate({
     prompt: folderImageResponse,
     n: 1,
-    size: "1024x1024",
+    size: "1792x1024",
+    model: "dall-e-3",
   });
   const imageUrl = aiImageResponse.data[0].url;
 
