@@ -180,12 +180,12 @@ export default function taskSchema() {
           taskName: "generateReportImage",
           function: generateReportImageHandler,
           inputs: ["imageDescriptionResponseContent", "userId"],
-          outputs: ["imageUrl, draftTitle"],
+          outputs: ["imageUrl", "draftTitle"],
         },
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle"],
+          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
           outputs: ["reportPicUrl"],
         },
 
@@ -268,12 +268,12 @@ export default function taskSchema() {
           taskName: "generateReportImage",
           function: generateReportImageHandler,
           inputs: ["imageDescriptionResponseContent", "userId"],
-          outputs: ["imageUrl, draftTitle"],
+          outputs: ["imageUrl", "draftTitle"],
         },
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle"],
+          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
           outputs: ["reportPicUrl"],
         },
         {
@@ -351,12 +351,12 @@ export default function taskSchema() {
           // endpoint: "/api/reports/save-report/generate-report-image",
           function: generateReportImageHandler,
           inputs: ["imageDescriptionResponseContent", "userId"],
-          outputs: ["imageUrl, draftTitle"],
+          outputs: ["imageUrl", "draftTitle"],
         },
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle"],
+          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
           outputs: ["reportPicUrl"],
         },
         // {
@@ -506,7 +506,7 @@ export default function taskSchema() {
           taskName: "generateReportImage",
           function: generateReportImageHandler,
           inputs: ["imageDescriptionResponseContent", "userId"],
-          outputs: ["imageUrl, draftTitle"],
+          outputs: ["imageUrl", "draftTitle"],
         },
         // {
         //   taskName: "uploadReportImageToCloudinary",
@@ -519,7 +519,7 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle"],
+          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
           outputs: ["reportPicUrl"],
         },
         {
@@ -591,7 +591,7 @@ export default function taskSchema() {
     //       // endpoint: "/api/reports/save-report/generate-report-image",
     //       function: generateReportImageHandler,
     //       inputs: ["imageDescriptionResponseContent", "userId"],
-    //       outputs: ["imageUrl, draftTitle"],
+    //       outputs: ["imageUrl", "draftTitle"],
     //     },
     //     {
     //       taskName: "uploadReportImageToCloudinary",

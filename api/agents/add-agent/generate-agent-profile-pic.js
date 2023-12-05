@@ -30,7 +30,7 @@ export default async function generateAgentProfilePicHandler(req, res) {
   }
   const agentName = get(req, "body.agentName");
   const aiImageResponse = await openai.images.generate({
-    prompt: `front facing photograph of a wild ${agentName}, synthwave style`,
+    prompt: `front facing photograph of a wild ${agentName}, synthwave colors`,
     n: 1,
     size: "1792x1024",
     model: "dall-e-3",

@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
+    "@img/sharp-darwin-arm64": "^0.33.0",
     "@supabase/supabase-js": "^2.33.2",
     "axios": "^1.6.1",
     "body-parser": "^1.20.2",
@@ -21,6 +22,7 @@
     "express": "^4.18.2",
     "firebase": "^10.4.0",
     "iconv-lite": "^0.6.3",
+    "jimp": "^0.22.10",
     "jsdom": "^22.1.0",
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.1",
