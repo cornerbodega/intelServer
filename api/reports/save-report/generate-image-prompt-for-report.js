@@ -40,7 +40,11 @@ export default async function handler(req, res) {
 
   const imageDescriptionResponseContent = await getFromOpenAi(
     getDraftImageMessages
-  );
+  ).catch((error) => {
+    console.log("error");
+    console.log(error);
+    return console.log({ error });
+  });
 
   console.log("imageDescriptionResponseContent1");
   console.log(imageDescriptionResponseContent);

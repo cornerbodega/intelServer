@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 import { onValue, set } from "firebase/database";
-
+import getExampleReportContent from "../../../utils/getExampleReportContent.js";
 // import firebase from "./firebase.js";
 import firebase from "../../../utils/firebase.js";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
@@ -68,34 +68,17 @@ export default async function draftReportHandler(req, res) {
     },
     {
       role: "user",
-      content: `In 80 words: what are the applications of Natural Language Processing in the modern digital landscape?`,
+      content: `what are the applications of Natural Language Processing in the modern digital landscape?`,
     },
     {
       role: "assistant",
-      content: `<div id="report">
-            <h2 id="reportTitle">Natural Language Processing (NLP) in the Modern Digital Landscape</h2>
-            
-            <h3 id="${generateUniqueID()}">Introduction:</h3>
-            <p id="${generateUniqueID()}">Natural Language Processing, a subfield of AI, focuses on enabling machines to understand and interpret human language. Its applications in the digital landscape are vast and transformative.</p>
-            
-            <h3 id="${generateUniqueID()}">Applications:</h3>
-            <ul id="${generateUniqueID()}">
-                <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Search Engines:</strong> Major search engines like Google leverage NLP to provide more accurate and context-aware search results.</li>
-                <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Chatbots and Virtual Assistants:</strong> Siri, Alexa, and Google Assistant, among others, use NLP to understand user queries and provide relevant responses.</li>
-                <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Sentiment Analysis:</strong> Businesses analyze customer reviews and feedback using NLP to gain insights into consumer sentiments.</li>
-                <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Content Recommendations:</strong> Platforms like Netflix and Spotify utilize NLP to analyze user preferences and deliver tailored content.</li>
-                <li id="${generateUniqueID()}"><strong id="${generateUniqueID()}">Translation Services:</strong> Real-time translation and transcription services, such as Google Translate, use NLP for accurate translations.</li>
-            </ul>
-            
-            <h3 id="${generateUniqueID()}">Conclusion:</h3>
-            <p id="${generateUniqueID()}">NLP's applications are vast and integral to many services in the modern digital age. Its capabilities have transformed how businesses interact with consumers and how users access and interpret information.</p>
-        </div>`,
+      content: getExampleReportContent(),
     },
   ];
 
   messages.push({
     role: "user",
-    content: `In ${reportWordCount} words: ${briefingInput}?`,
+    content: `${briefingInput}?`,
   });
   const feedback = req.body.feedback;
   if (feedback && feedback.length > 0) {
@@ -160,7 +143,4 @@ export default async function draftReportHandler(req, res) {
   //   `${newAccumulatedContent}${" ".repeat(3)}`
   // );
   return { draft: newAccumulatedContent };
-}
-function generateUniqueID() {
-  return Math.random().toString(36).substr(2, 9);
 }
