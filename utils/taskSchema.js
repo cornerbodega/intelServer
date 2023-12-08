@@ -228,7 +228,7 @@ export default function taskSchema() {
         },
         {
           // 2. This one charges
-          taskSchema: "steamContinuumDraft",
+          taskName: "steamContinuumDraft",
           function: streamContinuumDraftHandler,
           inputs: ["researchLink", "expertises", "userId", "reportLength"],
           outputs: ["draft"],

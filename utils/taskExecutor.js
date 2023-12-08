@@ -56,10 +56,15 @@ async function executeSubtasks(
   userId,
   taskType
 ) {
+  async function clearSubtasks() {
+    const clearSubtasksFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/`;
+    await saveToFirebase(clearSubtasksFirebasePath, {});
+  }
+  await clearSubtasks();
   for (const subtask of subtasks) {
     // Update Firebase with the current subtask
-    const firebasePaath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/${subtask.taskName}`;
-    await saveToFirebase(firebasePaath, subtask.taskName);
+    const createdAtFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/${subtask.taskName}/createdAt`;
+    await saveToFirebase(createdAtFirebasePath, `${new Date().toISOString()}`);
 
     const inputs = subtask.inputs.reduce((acc, inputKey) => {
       acc[inputKey] = context[inputKey] || "";
@@ -68,6 +73,12 @@ async function executeSubtasks(
 
     const output = await executeTask(subtask.taskName, inputs);
     context = { ...context, ...output };
+
+    const completedAtFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/${subtask.taskName}/completedAt`;
+    await saveToFirebase(
+      completedAtFirebasePath,
+      `${new Date().toISOString()}`
+    );
   }
 
   return context;

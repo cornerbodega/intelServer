@@ -15,38 +15,38 @@ export default function getExampleReportContent() {
     landscape are vast and transformative.
   </p>
 
-  <h3>Applications:</h3>
-  <ul>
+  <h3 id="${generateUniqueID()}">Applications:</h3>
+  <ul id="${generateUniqueID()}">
     <li>
-      <strong>Search Engines:</strong>
+      <strong id="${generateUniqueID()}">Search Engines:</strong>
       <div id="${generateUniqueID()}">
         Major search engines like Google leverage NLP to provide more accurate
         and context-aware search results.
       </div>
     </li>
     <li>
-      <strong>Chatbots and Virtual Assistants:</strong>
+      <strong id="${generateUniqueID()}">Chatbots and Virtual Assistants:</strong>
       <div id="${generateUniqueID()}">
         Siri, Alexa, and Google Assistant, among others, use NLP to understand
         user queries and provide relevant responses.
       </div>
     </li>
     <li>
-      <strong>Sentiment Analysis:</strong>
+      <strong id="${generateUniqueID()}">Sentiment Analysis:</strong>
       <div id="${generateUniqueID()}">
         Businesses analyze customer reviews and feedback using NLP to gain
         insights into consumer sentiments.
       </div>
     </li>
     <li>
-      <strong>Content Recommendations:</strong>
+      <strong id="${generateUniqueID()}">Content Recommendations:</strong>
       <div id="${generateUniqueID()}">
         Platforms like Netflix and Spotify utilize NLP to analyze user
         preferences and deliver tailored content.
       </div>
     </li>
     <li>
-      <strong>Translation Services:</strong>
+      <strong id="${generateUniqueID()}">Translation Services:</strong>
       <div id="${generateUniqueID()}">
         Real-time translation and transcription services, such as Google
         Translate, use NLP for accurate translations.
