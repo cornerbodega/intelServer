@@ -34,66 +34,66 @@ import { generateEpisodeNameHandler } from "../api/stock-sips/generate-episode-n
 import getFinancialStatementsHandler from "../api/stock-sips/get-financial-statements.js";
 export default function taskSchema() {
   return {
-    addAgent: {
-      inputs: ["userId"],
-      outputs: [],
-      subtasks: [
-        {
-          taskName: "generateExpertise",
-          function: generateExpertiseHandler,
-          // endpoint: "/api/agents/add-agent/generate-expertise",
-          inputs: ["expertiseInput", "specializedTraining", "userId"],
-          outputs: ["expertiseOutput"],
-        },
-        {
-          taskName: "generateAgentName",
-          function: generateAgentNameHandler,
-          // endpoint: "/api/agents/add-agent/generate-agent-name",
-          inputs: ["expertiseOutput", "specializedTraining", "userId"],
-          outputs: ["agentName", "bio"],
-        },
-        {
-          taskName: "generateAgentProfilePic",
-          function: generateAgentProfilePicHandler,
-          // endpoint: "/api/agents/add-agent/generate-agent-profile-pic",
-          inputs: ["agentName", "userId"],
-          outputs: ["imageUrl"],
-        },
-        {
-          taskName: "uploadReportImageToGcs",
-          function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "agentName"],
-          outputs: ["profilePicUrl"],
-        },
-        // {
-        //   taskName: "uploadAgentProfilePic",
-        //   function: uploadAgentProfilePicHandler,
-        //   // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
-        //   inputs: ["imageUrl", "userId"],
-        //   outputs: ["profilePicUrl"],
-        // },
-        {
-          taskName: "saveAgent",
-          function: saveAgentToSupabaseHandler,
-          // endpoint: "/api/agents/add-agent/save-agent-to-supabase",
-          inputs: [
-            "profilePicUrl",
-            "agentName",
-            "bio",
-            "expertiseOutput",
-            "userId",
-          ],
-          outputs: ["agentId"],
-        },
-        // replace calling this client-side routing task function with listening to firebase and changing the route as part of the UX routing early painting system
-        // {
-        //   taskName: "goToAgentProfile",
-        //   function: goToAgentProfile,
-        //   inputs: ["agentId", "userId"],
-        //   outputs: [],
-        // },
-      ],
-    },
+    // addAgent: {
+    //   inputs: ["userId"],
+    //   outputs: [],
+    //   subtasks: [
+    //     {
+    //       taskName: "generateExpertise",
+    //       function: generateExpertiseHandler,
+    //       // endpoint: "/api/agents/add-agent/generate-expertise",
+    //       inputs: ["expertiseInput", "specializedTraining", "userId"],
+    //       outputs: ["expertiseOutput"],
+    //     },
+    //     {
+    //       taskName: "generateAgentName",
+    //       function: generateAgentNameHandler,
+    //       // endpoint: "/api/agents/add-agent/generate-agent-name",
+    //       inputs: ["expertiseOutput", "specializedTraining", "userId"],
+    //       outputs: ["agentName", "bio"],
+    //     },
+    //     {
+    //       taskName: "generateAgentProfilePic",
+    //       function: generateAgentProfilePicHandler,
+    //       // endpoint: "/api/agents/add-agent/generate-agent-profile-pic",
+    //       inputs: ["agentName", "userId"],
+    //       outputs: ["imageUrl"],
+    //     },
+    //     {
+    //       taskName: "uploadReportImageToGcs",
+    //       function: uploadImageToGcsHandler,
+    //       inputs: ["imageUrl", "agentName"],
+    //       outputs: ["profilePicUrl"],
+    //     },
+    //     // {
+    //     //   taskName: "uploadAgentProfilePic",
+    //     //   function: uploadAgentProfilePicHandler,
+    //     //   // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
+    //     //   inputs: ["imageUrl", "userId"],
+    //     //   outputs: ["profilePicUrl"],
+    //     // },
+    //     {
+    //       taskName: "saveAgent",
+    //       function: saveAgentToSupabaseHandler,
+    //       // endpoint: "/api/agents/add-agent/save-agent-to-supabase",
+    //       inputs: [
+    //         "profilePicUrl",
+    //         "agentName",
+    //         "bio",
+    //         "expertiseOutput",
+    //         "userId",
+    //       ],
+    //       outputs: ["agentId"],
+    //     },
+    //     // replace calling this client-side routing task function with listening to firebase and changing the route as part of the UX routing early painting system
+    //     // {
+    //     //   taskName: "goToAgentProfile",
+    //     //   function: goToAgentProfile,
+    //     //   inputs: ["agentId", "userId"],
+    //     //   outputs: [],
+    //     // },
+    //   ],
+    // },
     // writeDraftReport: {
     //   // // 3. This one charges
     //   // function: draftReportStreamHandler,
@@ -154,16 +154,17 @@ export default function taskSchema() {
             "feedbacks",
             "userId",
             "previousDraft", // the previous draft to feebdack on
+            // todo: this should be previousDrafts
             "reportLength",
           ],
           outputs: ["draft"],
         },
-        {
-          taskName: "chargeTokens",
-          function: chargeTokensHandler,
-          inputs: ["userId", "reportLength", "draft"],
-          outputs: ["chargeSuccessful"],
-        },
+        // {
+        //   taskName: "chargeTokens",
+        //   function: chargeTokensHandler,
+        //   inputs: ["userId", "reportLength", "draft"],
+        //   outputs: ["chargeSuccessful"],
+        // },
       ],
     },
     regenerateReportImage: {
@@ -185,7 +186,12 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
+          inputs: [
+            "imageUrl",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+            "userId",
+          ],
           outputs: ["reportPicUrl"],
         },
 
@@ -204,6 +210,7 @@ export default function taskSchema() {
     },
     continuum: {
       inputs: [
+        "briefingInput",
         "reportLength",
         "parentReportId",
         "userId",
@@ -233,12 +240,12 @@ export default function taskSchema() {
           inputs: ["researchLink", "expertises", "userId", "reportLength"],
           outputs: ["draft"],
         },
-        {
-          taskName: "chargeTokens",
-          function: chargeTokensHandler,
-          inputs: ["userId", "reportLength", "draft"],
-          outputs: ["chargeSuccessful"],
-        },
+        // {
+        //   taskName: "chargeTokens",
+        //   function: chargeTokensHandler,
+        //   inputs: ["userId", "reportLength", "draft"],
+        //   outputs: ["chargeSuccessful"],
+        // },
         {
           taskName: "saveReportWithoutImage",
           function: saveReportToSupabaseHandler,
@@ -273,7 +280,12 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
+          inputs: [
+            "imageUrl",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+            "userId",
+          ],
           outputs: ["reportPicUrl"],
         },
         {
@@ -356,7 +368,12 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
+          inputs: [
+            "imageUrl",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+            "userId",
+          ],
           outputs: ["reportPicUrl"],
         },
         // {
@@ -423,14 +440,14 @@ export default function taskSchema() {
           taskName: "generateAgentProfilePic",
           function: generateAgentProfilePicHandler,
           // endpoint: "/api/agents/add-agent/generate-agent-profile-pic",
-          inputs: ["agentName", "userId"],
+          inputs: ["agentName", "userId", "expertiseOutput"],
           outputs: ["imageUrl"],
         },
         {
           taskName: "uploadAgentProfilePic",
           function: uploadImageToGcsHandler,
           // endpoint: "/api/agents/add-agent/upload-agent-profile-pic",
-          inputs: ["imageUrl", "agentName"],
+          inputs: ["imageUrl", "agentName", "userId"],
           outputs: ["profilePicUrl"],
         },
         {
@@ -519,7 +536,12 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "draftTitle", "imageDescriptionResponseContent"],
+          inputs: [
+            "imageUrl",
+            "draftTitle",
+            "imageDescriptionResponseContent",
+            "userId",
+          ],
           outputs: ["reportPicUrl"],
         },
         {
@@ -708,7 +730,7 @@ export default function taskSchema() {
         {
           taskName: "uploadReportImageToGcs",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "folderImageResponse"],
+          inputs: ["imageUrl", "folderImageResponse", "userId"],
           outputs: ["folderPicUrl"],
         },
         // {

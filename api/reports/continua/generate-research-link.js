@@ -81,7 +81,7 @@ export default async function handler(req, res) {
   }
   console.log("existingLinksList");
   console.log(existingLinksList);
-  const continuumPrompt = `Please read the following HTML report. Pretend you are highlighting up to one sentence with your cursor that you find most interesting.  Write an interesting research question that deep dive into the highlighted text for the purpose of expanding and enhancing the current report. Return a JSON-only response containing JSON with the following format: [{ elementId, highlightedText, researchQuestion }]. `;
+  const continuumPrompt = `Please read the following HTML report. Pretend you are highlighting up to one sentence with your cursor that you find most interesting. Write an interesting research question that deep dive into the highlighted text for the purpose of expanding and enhancing the current report. Return a JSON-only response containing JSON with the following format: [{ elementId, highlightedText, researchQuestion }]. `;
   console.log("continuumPrompt");
   console.log(continuumPrompt);
   const messages = [
