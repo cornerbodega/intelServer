@@ -38,6 +38,17 @@ export default function setupFirebaseListener() {
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
 
+            try {
+              const saveStatusInProgress = await saveToFirebase(
+                `/${
+                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
+                }/${process.env.serverUid}/${userId}/${taskType}/status`,
+                "in-progress"
+              );
+            } catch {
+              console.log("error saving status in progress");
+            }
+
             const taskDefinition = taskSchema()[taskType];
             if (!taskDefinition) {
               console.error(
@@ -47,13 +58,6 @@ export default function setupFirebaseListener() {
             }
 
             try {
-              const saveStatusInProgress = await saveToFirebase(
-                `/${
-                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.serverUid}/${userId}/${taskType}/status`,
-                "in-progress"
-              );
-
               // const updatedContext = await taskExecutor({
               //   taskName: taskType,
               //   taskData: taskData,
