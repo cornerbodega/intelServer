@@ -23,6 +23,7 @@ export default function setupFirebaseListener() {
         process.env.serverUid
       }/`
     );
+
     onValue(taskRef, async (snapshot) => {
       const allUserTasks = snapshot.val();
 
@@ -30,18 +31,15 @@ export default function setupFirebaseListener() {
         return;
       }
 
-      // Inside the onValue callback
       for (let userId in allUserTasks) {
         const userTasks = allUserTasks[userId];
 
         for (let taskType in userTasks) {
           const taskData = userTasks[taskType];
 
-          // Only proceed if the task status is 'queued'
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
 
-            // Define the reference to the specific task's status
             const taskStatusRef = ref(
               db,
               `/${
@@ -51,16 +49,13 @@ export default function setupFirebaseListener() {
 
             runTransaction(taskStatusRef, (currentStatus) => {
               if (currentStatus === "queued") {
-                // Update the status to 'in-progress'
                 return "in-progress";
               }
-              // Returning undefined aborts the transaction
-              return undefined;
+              return; // Abort the transaction if not 'queued'
             })
               .then(async (result) => {
                 if (result.committed) {
-                  // Transaction was successful, and the status was set to 'in-progress'
-                  // Now execute the task
+                  // Here, place your task execution logic
                   try {
                     const taskDefinition = taskSchema()[taskType];
                     if (!taskDefinition) {
@@ -79,14 +74,13 @@ export default function setupFirebaseListener() {
                       taskType: taskType,
                     });
 
-                    // Further processing, saving completion status, etc.
+                    // Further processing, like saving completion status
                   } catch (error) {
                     console.log("Error processing task for user:", userId);
                     console.log(error);
-                    // Handle errors
+                    // Error handling
                   }
                 } else {
-                  // Transaction was aborted or the task was already in progress/complete
                   console.log(
                     "Task is already being processed or was completed."
                   );
@@ -100,4 +94,88 @@ export default function setupFirebaseListener() {
       }
     });
   });
+  // signServerIntoFirebase().then(async (userCredential) => {
+  //   const taskRef = ref(
+  //     db,
+  //     `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+  //       process.env.serverUid
+  //     }/`
+  //   );
+  //   onValue(taskRef, async (snapshot) => {
+  //     const allUserTasks = snapshot.val();
+
+  //     if (!allUserTasks) {
+  //       return;
+  //     }
+
+  //     // Inside the onValue callback
+  //     for (let userId in allUserTasks) {
+  //       const userTasks = allUserTasks[userId];
+
+  //       for (let taskType in userTasks) {
+  //         const taskData = userTasks[taskType];
+
+  //         // Only proceed if the task status is 'queued'
+  //         if (taskData.status === "queued") {
+  //           console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
+
+  //           // Define the reference to the specific task's status
+  //           const taskStatusRef = ref(
+  //             db,
+  //             `/${
+  //               process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
+  //             }/${process.env.serverUid}/${userId}/${taskType}/status`
+  //           );
+
+  //           runTransaction(taskStatusRef, (currentStatus) => {
+  //             if (currentStatus === "queued") {
+  //               // Update the status to 'in-progress'
+  //               return "in-progress";
+  //             }
+  //             // Returning undefined aborts the transaction
+  //             return undefined;
+  //           })
+  //             .then(async (result) => {
+  //               if (result.committed) {
+  //                 // Transaction was successful, and the status was set to 'in-progress'
+  //                 // Now execute the task
+  //                 try {
+  //                   const taskDefinition = taskSchema()[taskType];
+  //                   if (!taskDefinition) {
+  //                     console.error(
+  //                       `Task definition not found for task type: ${taskType}`
+  //                     );
+  //                     return;
+  //                   }
+
+  //                   const updatedContext = await taskExecutor({
+  //                     taskName: taskType,
+  //                     taskData: taskData,
+  //                     taskContext: {},
+  //                     taskDefinition,
+  //                     userId: userId,
+  //                     taskType: taskType,
+  //                   });
+
+  //                   // Further processing, saving completion status, etc.
+  //                 } catch (error) {
+  //                   console.log("Error processing task for user:", userId);
+  //                   console.log(error);
+  //                   // Handle errors
+  //                 }
+  //               } else {
+  //                 // Transaction was aborted or the task was already in progress/complete
+  //                 console.log(
+  //                   "Task is already being processed or was completed."
+  //                 );
+  //               }
+  //             })
+  //             .catch((error) => {
+  //               console.error("Transaction failed: ", error);
+  //             });
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
 }
