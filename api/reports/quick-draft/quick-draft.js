@@ -94,8 +94,8 @@ export async function writeDraftFunction(req) {
       }/${req.body.userId}/quickDraft/context/draft`,
       `${newAccumulatedContent}…`
     );
-    // console.log("saveChunkToFirebase");
-    // console.log(saveChunkToFirebase);
+    console.log("saveChunkToFirebase");
+    console.log(saveChunkToFirebase);
   }
   newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
