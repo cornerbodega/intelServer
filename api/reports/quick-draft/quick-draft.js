@@ -1,8 +1,6 @@
 import OpenAI from "openai";
-// import { saveToFirebase } from "../../../utils/saveToFirebase.js";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
-import saveToSupabase from "../../../utils/saveToSupabase.js";
-import getReportLengthToWordCount from "../../../utils/constants/getReportLengthToWordCount.js";
+
 import getExampleReportContent from "../../../utils/getExampleReportContent.js";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +11,7 @@ export async function writeDraftFunction(req) {
   console.log(req.body);
   console.log("getExampleReportContent()");
   console.log(getExampleReportContent());
-  let { briefingInput, reportLength } = req.body;
+  let { briefingInput } = req.body;
   if (!briefingInput) {
     console.log("Write Quick Draft Error 544: Where is the researchquesiton");
     return;
@@ -27,13 +25,6 @@ export async function writeDraftFunction(req) {
   if (expertises.length > 2) {
     expertiseString += " and " + expertises[2];
   }
-  const reportLengthToWordCount = getReportLengthToWordCount();
-  console.log("reportLengthToWordCount");
-  console.log(reportLengthToWordCount);
-  if (!reportLength) {
-    reportLength = "short";
-  }
-  const reportWordCount = reportLengthToWordCount[reportLength];
 
   let messages = [
     {
@@ -66,31 +57,21 @@ export async function writeDraftFunction(req) {
       });
     }
   }
-  // if (req.body.feedback && req.body.feedback.length > 0) {
-  //   const feedback = { role: "user", content: `${req.body.feedback}` };
-  //   const currentDraft = [
-  //     { role: "assistant", content: req.body.previousDraft },
-  //   ];
-  //   messages = [...messages, ...currentDraft, feedback];
-  // }
+
   console.log("write quick draft messages");
   console.log(messages);
   const stream = await openai.chat.completions.create({
     model: "gpt-4",
-    // model: "gpt-3.5-turbo",
     messages,
     stream: true,
   });
-  // const draftResponseContent = chat_completion.choices[0].message.content;
-  // return draftResponseContent;
 
   let newAccumulatedContent = "";
   for await (const part of stream) {
-    // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     const saveChunkToFirebase = await saveToFirebase(
       `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.serverUid
+        process.env.SERVER_UID
       }/${req.body.userId}/quickDraft/context/draft`,
       `${newAccumulatedContent}…`
     );
@@ -100,7 +81,7 @@ export async function writeDraftFunction(req) {
   newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
     `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-      process.env.serverUid
+      process.env.SERVER_UID
     }/${req.body.userId}/quickDraft/context/draft`,
     `${newAccumulatedContent}}`
   );

@@ -1,5 +1,4 @@
 // @author Marvin-Rhone
-// import getFromOpenAi from "../../utils/getFromOpenAi";
 import getFromOpenAi from "../../../utils/getFromOpenAi.js";
 export default async function handler(req, res) {
   const draft = req.body.draft;

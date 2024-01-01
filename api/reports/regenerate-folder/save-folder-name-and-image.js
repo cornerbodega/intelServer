@@ -28,11 +28,7 @@ export default async function handler(req, res) {
       console.log(error);
     }
   }
-  console.log("existingFolderData");
-  console.log(existingFolderData);
-  const existingFolderId = existingFolderData[0].folderId;
-  const existingFolderName = existingFolderData[0].folderName;
-  const existingFolderPicUrl = existingFolderData[0].folderPicUrl;
+
   let existingFolderPicUrls = existingFolderData[0].folderPicUrls;
   if (existingFolderPicUrls) {
     existingFolderPicUrls = JSON.parse(existingFolderPicUrls);
@@ -48,14 +44,12 @@ export default async function handler(req, res) {
     folderDescription,
     folderPicDescription: folderImageResponse,
   };
-  console.log("folderNameAndImage", folderNameAndImage);
-  console.log("folderNameAndImageexistingFolderId");
-  // console.log(existingFolderId);
-  // Update folder details
+
   const updatedFolderData = await updateFolderData(
     folderId,
     folderNameAndImage
   );
+
   async function updateFolderData(folderId, folderNameAndImage) {
     try {
       const { data, error } = await supabase
@@ -78,8 +72,6 @@ export default async function handler(req, res) {
       console.log(error);
     }
   }
-
-  //return({
 
   return {};
 }

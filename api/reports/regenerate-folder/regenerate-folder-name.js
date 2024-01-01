@@ -8,9 +8,7 @@ export default async function handler(req, res) {
   const supabase = getSupabase();
   const folderId = req.body.folderId;
   let folderName = "";
-  let folderPicUrl = "";
   let folderDescription = "";
-  // get all reports in folder
   let { data: reportFolders, reportFolderError } = await supabase
     .from("reportFolders")
     .select(
@@ -23,10 +21,7 @@ export default async function handler(req, res) {
   if (reportFolderError) {
     console.log("reportFolderError");
   }
-  console.log("genenerate folder name reportFolders");
-  console.log(reportFolders);
-  // let folderName = "";
-  // let folderPicUrl = "";
+
   if (reportFolders && reportFolders.length > 0) {
     // generate folder name and image based on report contents
     // this function will be called when
@@ -58,17 +53,10 @@ export default async function handler(req, res) {
           },
         ],
       });
-      // let folderName = "";
 
       const folderAssetResponseContent =
         chat_completion.choices[0].message.content;
       if (folderAssetResponseContent) {
-        console.log("folderAssetResponseContent");
-        console.log(folderAssetResponseContent);
-        console.log("folderName");
-        console.log(folderName);
-        console.log("typeof folderAssetResponseContent");
-        console.log(typeof folderAssetResponseContent);
         if (typeof folderAssetResponseContent === "object") {
           folderName = folderAssetResponseContent.folderName;
           folderDescription = folderAssetResponseContent.folderDescription;
@@ -88,22 +76,10 @@ export default async function handler(req, res) {
           folderDescription = folderAssetResponseContent;
         }
       }
-      console.log("folderName2");
-      console.log(folderName);
-      console.log("folderDescription");
-      console.log(folderDescription);
 
-      // "realist painting",
-      // "impressionist painting",
       return { folderName, folderDescription };
     } catch (error) {
-      console.error("generateFolderName error");
-      console.log(error);
       return console.log({ error: error.message });
     }
-    // Get the image from Dall-E
-    // Folder title x animal name
   }
-
-  // await saveToLinksTableFunction();
 }

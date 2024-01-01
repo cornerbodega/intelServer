@@ -31,10 +31,7 @@ export default async function handler(req, res) {
         "https://res.cloudinary.com/dcf11wsow/image/upload/v1697948290/c5ejkmxbucery6xnz2mg.png",
     };
   }
-  console.log("aiImageResponse");
-  console.log(aiImageResponse);
-  console.log("aiImageResponse.data");
-  console.log(aiImageResponse.data);
+
   const imageUrl = aiImageResponse.data[0].url;
   return { imageUrl };
 }

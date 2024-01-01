@@ -1,7 +1,6 @@
 // @author Marvin-Rhone
 import { JSDOM } from "jsdom";
-// import { getFromOpenAi } from "../../../../utils/getFromOpenAi.js";
-// import getFromOpenAi from "../../../utils/getFromOpenAi.js";
+
 import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -9,11 +8,8 @@ const openai = new OpenAI({
 
 export default async function handler(req, res) {
   console.log("GENERATE RESEARCH LINK ENDPOINT");
-  const { parentReportContent, existingHyperlinks } = req.body;
   console.log(req.body);
-  // const generatedResearchLinks = await generateResearchLinks(draft);
-  // async function generateResearchLinks(reportContent) {
-  // ${parentReportContent}. Existing Hyperlinks: ${existingHyperlinks}
+  const { parentReportContent, existingHyperlinks } = req.body;
 
   const filteredReportContent = removeHighlightedText(
     parentReportContent,
@@ -41,35 +37,6 @@ export default async function handler(req, res) {
     return document.body.innerHTML;
   }
 
-  // const linksExample = [
-  //   {
-  //     elementId: "nynf911g4",
-  //     highlightedText: '"Data Ownership and Control"',
-  //     researchQuestion:
-  //       "Given the highlighted text 'Data Ownership and Control,' what are the potential shifts in traditional notions of data ownership and control when implementing blockchain and differential privacy in personalized healthcare recommendations?",
-  //   },
-  // ];
-  // const existingHyperlinksExample = [
-  //   {
-  //     elementId: "qyld7glm7",
-  //     highlightedText: '"Transparency and Accountability"',
-  //     researchQuestion:
-  //       "Considering the emphasis on 'Transparency and Accountability,' how can we ensure transparency in the algorithms used for personalized healthcare recommendations on blockchain and how can we hold them accountable to prevent biases?",
-  //   },
-  //   {
-  //     createdAt: "2023-09-11T03:14:56.940684+00:00",
-  //     elementId: "heg23wht7",
-  //     highlightedText: '"Privacy-Preserving Techniques"',
-  //     researchQuestion:
-  //       "Regarding 'Privacy-Preserving Techniques,' what are the most effective privacy-preserving techniques based on differential privacy that can be employed to anonymize and aggregate healthcare data while still extracting valuable insights for personalized recommendations?",
-  //   },
-  // ];
-
-  // this function will be called for each continuum iteration to generate the research questions and links
-  // const linksCount = 1;
-  console.log("generateResearchLinks existingHyperlinks");
-  console.log(existingHyperlinks);
-
   let existingLinksList = "";
 
   if (existingHyperlinks) {
@@ -79,11 +46,9 @@ export default async function handler(req, res) {
       });
     }
   }
-  console.log("existingLinksList");
-  console.log(existingLinksList);
+
   const continuumPrompt = `Please read the following HTML report. Pretend you are highlighting up to one sentence with your cursor that you find most interesting. Write an interesting research question that deep dive into the highlighted text for the purpose of expanding and enhancing the current report. Return a JSON-only response containing JSON with the following format: [{ elementId, highlightedText, researchQuestion }]. `;
-  console.log("continuumPrompt");
-  console.log(continuumPrompt);
+
   const messages = [
     {
       role: "user",
@@ -104,8 +69,7 @@ export default async function handler(req, res) {
 
     return results.choices[0].message.content;
   }
-  console.log("generateResearchLinks researchLink");
-  console.log(researchLinksResponse);
+
   let researchLinks = researchLinksResponse;
   if (typeof researchLinksResponse === "string") {
     researchLinks = (() => {
@@ -116,33 +80,14 @@ export default async function handler(req, res) {
       }
     })();
   }
-  console.log("save report researchLinksResponse researchLinks");
-  console.log(researchLinks);
-  // return researchLinks;
-  // return researchLinksR
-  // let researchLinksArray = researchLinks;
-  // // if JSON.parse(researchLinks)
-  // if (typeof researchLinks === "array") {
-  //   researchLinksArray = researchLinks;
-  // } else if (typeof suggestionResponseContent === "string") {
-  //   researchLinksArray = JSON.parse(researchLinks);
-  // }
   const researchLink = {
     ...researchLinks[0],
     briefingInput: researchLinks[0].researchQuestion,
   };
-  // const researchLink2 = { ...researchLinks[1], ...parentAndChildReportIds };
-  // const researchLink3 = { ...researchLinks[2], ...parentAndChildReportIds };
+
   const responseObj = {
     researchLink,
-    // researchLink2,
-    // researchLink3,
   };
-  // console.log("generate research links responseObj");
-  // console.log(responseObj);
-  // return responseObj;
-  // }
-  console.log("READ CHILD REPORT ENDPOI researcLinks");
-  console.log(responseObj);
+
   return responseObj;
 }

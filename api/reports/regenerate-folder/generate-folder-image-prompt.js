@@ -4,9 +4,6 @@ const openai = new OpenAI({
 });
 export default async function handler(req, res) {
   const { folderDescription } = req.body;
-  // const imageType = "realist painting";
-  // "realist painting",
-  // "impressionist painting",
 
   try {
     const chat_completion = await openai.chat.completions.create({
@@ -27,22 +24,10 @@ export default async function handler(req, res) {
     });
 
     const folderImageResponse = chat_completion.choices[0].message.content;
-    console.log("folderImageResponse2");
-    console.log(folderImageResponse);
+
     return { folderImageResponse };
   } catch (error) {
-    console.log("error");
     console.log(error);
     return console.log({ error });
   }
-  // await saveToLinksTableFunction();
 }
-
-const visualStyles = [
-  // "photograph",
-  "realist painting",
-  // "impressionist painting",
-  // "illustration",
-  // "3d rendering",
-  // "digital art",
-];

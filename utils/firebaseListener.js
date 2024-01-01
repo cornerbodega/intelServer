@@ -19,7 +19,7 @@ export default function setupFirebaseListener() {
     const taskRef = ref(
       db,
       `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.serverUid
+        process.env.SERVER_UID
       }/`
     );
 
@@ -44,7 +44,7 @@ export default function setupFirebaseListener() {
               db,
               `/${
                 process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-              }/${process.env.serverUid}/${userId}/${taskType}/status`
+              }/${process.env.SERVER_UID}/${userId}/${taskType}/status`
             );
             await runTransaction(taskStatusRef, () => "in-progress");
 
@@ -83,7 +83,7 @@ export default function setupFirebaseListener() {
                 db,
                 `/${
                   process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.serverUid}/${userId}/${taskType}/completedAt`
+                }/${process.env.SERVER_UID}/${userId}/${taskType}/completedAt`
               );
               await runTransaction(taskCompletedAtRef, () =>
                 new Date().toISOString()
@@ -93,7 +93,7 @@ export default function setupFirebaseListener() {
                 db,
                 `/${
                   process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.serverUid}/${userId}/${taskType}/context`
+                }/${process.env.SERVER_UID}/${userId}/${taskType}/context`
               );
               await runTransaction(taskContextRef, () => updatedContext);
             } catch (error) {
@@ -106,7 +106,7 @@ export default function setupFirebaseListener() {
                 db,
                 `/${
                   process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.serverUid}/${userId}/${taskType}/errorMessage`
+                }/${process.env.SERVER_UID}/${userId}/${taskType}/errorMessage`
               );
               await runTransaction(
                 taskErrorMessageRef,

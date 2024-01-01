@@ -30,8 +30,6 @@ async function executeTask(taskName, inputs) {
   const taskDefinition = await findTaskDefinition(taskName);
 
   console.log(`Running ${taskName}`);
-  // console.log(`taskDefinition ${taskName} inputs:`);
-  // console.log(inputs);
 
   if (inputs.currentGeneration) {
     if (inputs.currentGeneration > inputs.maxGenerations) {
@@ -57,13 +55,13 @@ async function executeSubtasks(
   taskType
 ) {
   async function clearSubtasks() {
-    const clearSubtasksFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/`;
+    const clearSubtasksFirebasePath = `${firebaseRef}/${process.env.SERVER_UID}/${userId}/${taskType}/subtasks/`;
     await saveToFirebase(clearSubtasksFirebasePath, {});
   }
   await clearSubtasks();
   for (const subtask of subtasks) {
     // Update Firebase with the current subtask
-    const createdAtFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/${subtask.taskName}/createdAt`;
+    const createdAtFirebasePath = `${firebaseRef}/${process.env.SERVER_UID}/${userId}/${taskType}/subtasks/${subtask.taskName}/createdAt`;
     await saveToFirebase(createdAtFirebasePath, `${new Date().toISOString()}`);
 
     const inputs = subtask.inputs.reduce((acc, inputKey) => {
@@ -74,7 +72,7 @@ async function executeSubtasks(
     const output = await executeTask(subtask.taskName, inputs);
     context = { ...context, ...output };
 
-    const completedAtFirebasePath = `${firebaseRef}/${process.env.serverUid}/${userId}/${taskType}/subtasks/${subtask.taskName}/completedAt`;
+    const completedAtFirebasePath = `${firebaseRef}/${process.env.SERVER_UID}/${userId}/${taskType}/subtasks/${subtask.taskName}/completedAt`;
     await saveToFirebase(
       completedAtFirebasePath,
       `${new Date().toISOString()}`
@@ -98,7 +96,6 @@ export async function taskExecutor({
 
   const taskDefinition = taskSchema()[taskName];
   if (taskDefinition.subtasks) {
-    // Pass Firebase reference path, userId, and taskType
     accumulatedContext = await executeSubtasks(
       taskDefinition.subtasks,
       accumulatedContext,
@@ -107,9 +104,6 @@ export async function taskExecutor({
       taskType
     );
   }
-
-  // console.log("accumulatedContext");
-  // console.log(accumulatedContext);
 
   return accumulatedContext;
 }

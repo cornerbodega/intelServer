@@ -12,7 +12,6 @@ export default async function handler(req, res) {
   const cloudinaryImageUploadResult = await cloudinary.uploader
     .upload(imageUrl)
     .catch((error) => console.log(error));
-  //   .then((result) => console.log(result))
   console.log("Folder cloudinaryImageUploadResult");
   const folderPicUrl = cloudinaryImageUploadResult.url;
 
