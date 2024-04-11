@@ -14,6 +14,10 @@ export default async function generateAgentProfilePicHandler(req, res) {
   console.log("GENERATE AGENT PROFILE PIC ENDPOINT");
   console.log("Input:");
   console.log(req.body);
+  if (req.body.agentId) {
+    console.log(`[Generate Agent Profile Pic] Agent already has an id`);
+    return { agentId: req.body.agentId };
+  }
   const existingAgentId = req.body.existingAgentId;
   const expertiseOutput = req.body.expertiseOutput;
   const expertiseString = expertiseOutput.join(" and ");

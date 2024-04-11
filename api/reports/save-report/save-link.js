@@ -7,6 +7,10 @@ export default async function handler(req, res) {
   const { parentReportId, childReportId, researchLink } = req.body;
   const { highlightedText, elementId } = researchLink;
 
+  if (!parentReportId) {
+    return console.log(`[Save Link] This is not a linked report`);
+  }
+
   const saveLinksObj = {
     body: {
       childReportId,

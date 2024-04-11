@@ -31,12 +31,6 @@ async function executeTask(taskName, inputs) {
 
   console.log(`Running ${taskName}`);
 
-  if (inputs.currentGeneration) {
-    if (inputs.currentGeneration > inputs.maxGenerations) {
-      console.log("currentGeneration > maxGenerations. not executing task");
-      return;
-    }
-  }
   if (!taskDefinition) {
     console.log("error 3454: missing taskDefinition for");
     console.log(taskName);
@@ -45,6 +39,11 @@ async function executeTask(taskName, inputs) {
 
   if (taskDefinition.function) {
     return await taskDefinition.function({ body: inputs });
+  } else {
+    console.log("error 3455: missing function for");
+    console.log(taskName);
+    console.log(`taskDefinition: ${JSON.stringify(taskDefinition)}`);
+    return;
   }
 }
 async function executeSubtasks(

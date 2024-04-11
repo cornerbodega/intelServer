@@ -13,6 +13,10 @@ export default async function generateAgentNameHandler(req, res) {
   console.log("GENERATE EXPERTISE ENDPOINT");
   console.log("req.body");
   console.log(req.body);
+  if (req.body.agentId) {
+    console.log(`[Generate Agent Name] Agent already has an id`);
+    return { agentId: req.body.agentId };
+  }
   const existingAgentId = req.body.existingAgentId;
   if (existingAgentId) {
     // get existing agent name

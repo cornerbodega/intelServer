@@ -12,6 +12,10 @@ const bucket = storage.bucket(bucketName);
 export default async function handler(req, res) {
   console.log("upload-image-to-gcs.js");
   console.log("req.body:", req.body);
+  if (req.body.agentId) {
+    console.log(`[upload-image-to-gcs] No agentId found in request body.`);
+    return { agentId: req.body.agentId };
+  }
   const {
     imageUrl,
     draftTitle,

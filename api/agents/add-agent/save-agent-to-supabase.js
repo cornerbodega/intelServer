@@ -5,6 +5,9 @@ export default async function saveAgentToSupabaseHandler(req, res) {
   console.log("UPLOAD AGENT PROFILE PIC ENDPOINT");
   console.log("Input:");
   console.log(req.body);
+  if (req.body.agentId) {
+    return { agentId: req.body.agentId };
+  }
   const existingAgentId = req.body.existingAgentId;
   if (existingAgentId) {
     return { agentId: existingAgentId };

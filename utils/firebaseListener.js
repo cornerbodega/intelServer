@@ -4,13 +4,14 @@ import taskSchema from "./taskSchema.js";
 import { taskExecutor } from "./taskExecutor.js";
 const db = firebase.db;
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import "dotenv/config";
 
 export default function setupFirebaseListener() {
   console.log("SETUP FIREBASE LISTENER");
 
   function signServerIntoFirebase() {
-    const email = "merhone@gmail.com";
-    const password = "suzi99";
+    const email = process.env.FIREBASE_EMAIL;
+    const password = process.env.FIREBASE_PASSWORD;
     const auth = getAuth();
     return signInWithEmailAndPassword(auth, email, password);
   }
@@ -39,7 +40,19 @@ export default function setupFirebaseListener() {
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
 
-            // Transaction to update task status to 'in-progress'
+            const now = Date.now();
+            const lockRef = ref(db, `locks/${userId}/${taskType}`);
+            const lockSnapshot = await get(lockRef);
+
+            // Check if the task is already locked and the lock hasn't expired
+            if (lockSnapshot.exists() && now < lockSnapshot.val().expiry) {
+              console.log("Task is currently locked.");
+              return;
+            }
+
+            // Set or update the lock with a new expiry time (e.g., 30 seconds from now)
+            await set(lockRef, { expiry: now + 30000 });
+
             const taskStatusRef = ref(
               db,
               `/${
@@ -53,6 +66,8 @@ export default function setupFirebaseListener() {
               console.error(
                 `Task definition not found for task type: ${taskType}`
               );
+              // Clear the lock if unable to find task definition
+              await remove(lockRef);
               return;
             }
 
@@ -72,13 +87,14 @@ export default function setupFirebaseListener() {
                   JSON.stringify(updatedContext)
               ) {
                 console.log("No changed context returned from task executor.");
+                // Clear the lock if there's no updated context
+                await remove(lockRef);
                 return;
               }
 
               // Transaction to update task status to 'complete'
               await runTransaction(taskStatusRef, () => "complete");
 
-              // Additional transactions for saving completedAt and context
               const taskCompletedAtRef = ref(
                 db,
                 `/${
@@ -112,6 +128,9 @@ export default function setupFirebaseListener() {
                 taskErrorMessageRef,
                 () => error.message || "Unknown error"
               );
+            } finally {
+              // Always attempt to clear the lock, even if there was an error processing the task
+              await remove(lockRef);
             }
           }
         }

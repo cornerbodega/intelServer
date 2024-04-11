@@ -217,6 +217,7 @@ export default function taskSchema() {
         "parentReportId",
         "expertiseOutput",
         "specializedTraining",
+        "agentId",
       ],
       outputs: [],
       subtasks: [
@@ -295,19 +296,19 @@ export default function taskSchema() {
         {
           taskName: "generateAgentName",
           function: generateAgentNameHandler,
-          inputs: ["expertiseOutput", "userId"],
+          inputs: ["expertiseOutput", "userId", "agentId"],
           outputs: ["agentName", "bio"],
         },
         {
           taskName: "generateAgentProfilePic",
           function: generateAgentProfilePicHandler,
-          inputs: ["agentName", "userId", "expertiseOutput"],
+          inputs: ["agentName", "userId", "expertiseOutput", "agentId"],
           outputs: ["imageUrl"],
         },
         {
           taskName: "uploadAgentProfilePic",
           function: uploadImageToGcsHandler,
-          inputs: ["imageUrl", "agentName", "userId"],
+          inputs: ["imageUrl", "agentName", "userId", "agentId"],
           outputs: ["profilePicUrl"],
         },
         {
@@ -319,6 +320,7 @@ export default function taskSchema() {
             "bio",
             "expertiseOutput",
             "userId",
+            "agentId",
           ],
           outputs: ["agentId"],
         },
