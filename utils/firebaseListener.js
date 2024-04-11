@@ -17,6 +17,7 @@ export default function setupFirebaseListener() {
   }
 
   signServerIntoFirebase().then(async (userCredential) => {
+    // wait for a random interval up to 0.5 seconds before processing the task
     const taskRef = ref(
       db,
       `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
@@ -24,8 +25,26 @@ export default function setupFirebaseListener() {
       }/`
     );
 
-    onValue(taskRef, async (snapshot) => {
+    // Debounce function
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Debounced onValue callback
+    const debouncedOnValue = debounce(async (snapshot) => {
       const allUserTasks = snapshot.val();
+      if (!allUserTasks) {
+        return;
+      }
 
       if (!allUserTasks) {
         return;
@@ -40,25 +59,14 @@ export default function setupFirebaseListener() {
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
 
-            const now = Date.now();
-            const lockRef = ref(db, `locks/${userId}/${taskType}`);
-            const lockSnapshot = await get(lockRef);
-
-            // Check if the task is already locked and the lock hasn't expired
-            if (lockSnapshot.exists() && now < lockSnapshot.val().expiry) {
-              console.log("Task is currently locked.");
-              return;
-            }
-
-            // Set or update the lock with a new expiry time (e.g., 30 seconds from now)
-            await set(lockRef, { expiry: now + 30000 });
-
+            // Transaction to update task status to 'in-progress'
             const taskStatusRef = ref(
               db,
               `/${
                 process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
               }/${process.env.SERVER_UID}/${userId}/${taskType}/status`
             );
+
             await runTransaction(taskStatusRef, () => "in-progress");
 
             const taskDefinition = taskSchema()[taskType];
@@ -66,8 +74,6 @@ export default function setupFirebaseListener() {
               console.error(
                 `Task definition not found for task type: ${taskType}`
               );
-              // Clear the lock if unable to find task definition
-              await remove(lockRef);
               return;
             }
 
@@ -87,14 +93,13 @@ export default function setupFirebaseListener() {
                   JSON.stringify(updatedContext)
               ) {
                 console.log("No changed context returned from task executor.");
-                // Clear the lock if there's no updated context
-                await remove(lockRef);
                 return;
               }
 
               // Transaction to update task status to 'complete'
               await runTransaction(taskStatusRef, () => "complete");
 
+              // Additional transactions for saving completedAt and context
               const taskCompletedAtRef = ref(
                 db,
                 `/${
@@ -128,13 +133,13 @@ export default function setupFirebaseListener() {
                 taskErrorMessageRef,
                 () => error.message || "Unknown error"
               );
-            } finally {
-              // Always attempt to clear the lock, even if there was an error processing the task
-              await remove(lockRef);
             }
           }
         }
       }
-    });
+    }, 500); // Wait for 500ms before processing the task
+
+    // Apply debounced callback to onValue
+    onValue(taskRef, debouncedOnValue);
   });
 }
