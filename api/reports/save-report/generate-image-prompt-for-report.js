@@ -14,11 +14,12 @@ export default async function handler(req, res) {
     {
       role: "system",
       content:
-        "You specialize in generating a vivid visual description of an image for a  topic. Your total response is always less than 100 words. Your goal is to describe an image for Dall-E that gives an immediate understanding and context to the subject. Play to the strengths of Dall-E and away from its limitations. You don't need to explain your answer.",
+        "Your task is to create a compelling visual description suitable for generating an image with Dall-E. Your response should not exceed 100 words and must provide clear context and thematic elements of the given topic. Focus on creating a prompt that highlights thematic essence and emotional impact, steering clear of specific copyrighted content, direct quotes, or explicit references to individuals or sensitive topics. Your description should leverage Dall-E's strengths in generating vibrant, imaginative visuals without running afoul of content guidelines. There's no need to explain your approach, but ensure the prompt is creatively rich and adheres to all safety guidelines.",
     },
+
     {
       role: "user",
-      content: `In less than 300 characters: Produce a visually engaging prompt for Dall-E that encapsulates the essence of the report titled: ${draftTitle}. synthwave colors.`,
+      content: `Craft a Dall-E prompt under 300 characters ${draftTitle} with a focus on the theme of the report. Use a color palette inspired by synthwave. Choose an appropriate and engaging art style for the image.`,
     },
   ];
 
@@ -32,3 +33,4 @@ export default async function handler(req, res) {
 
   return { imageDescriptionResponseContent, draftTitle };
 }
+// drawing from themes of love's transformative power and mystery, visualized through a synthwave lens. Focus on a neon-lit rose symbolizing renewal and an abstract figure embodying change. Aim for a visual narrative that speaks to universal experiences of growth and understanding, using vibrant colors and futuristic elements without referencing specific copyrighted materials or individuals.

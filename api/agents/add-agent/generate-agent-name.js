@@ -69,10 +69,10 @@ export default async function generateAgentNameHandler(req, res) {
         },
         {
           role: "assistant",
-          content: `{
-                "animal": "Honeybee",
-                "bio": "With a codebase that draws inspiration from one of nature's most impressive architects, this AI agent is here to ensure your tech solutions are nothing short of hive-quality excellence. Approach with curiosity, leave with clarity."
-            }`,
+          content: `${JSON.stringify({
+            animal: "Honeybee",
+            bio: "With a codebase that draws inspiration from one of nature's most impressive architects, this AI agent is here to ensure your tech solutions are nothing short of hive-quality excellence. Approach with curiosity, leave with clarity.",
+          })}`,
         },
         {
           role: "user",
