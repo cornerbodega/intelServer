@@ -2,15 +2,15 @@ import { Storage } from "@google-cloud/storage";
 import fetch from "node-fetch";
 import Jimp from "jimp";
 
-const base64Credentials = process.env.GCS_APPLICATION_CREDENTIALS_BASE64;
-
-// Decode Base64 into JSON
-const credentials = JSON.parse(
-  Buffer.from(base64Credentials, "base64").toString("utf8")
+const credentialsJSON = JSON.parse(
+  Buffer.from(
+    process.env.GCS_APPLICATION_CREDENTIALS_BASE64,
+    "base64"
+  ).toString("utf-8")
 );
-
-// Initialize the Storage client with credentials
-const storage = new Storage({ credentials });
+const storage = new Storage({
+  credentials: credentialsJSON,
+});
 const bucketName = "intelligence-images";
 const bucket = storage.bucket(bucketName);
 
