@@ -128,3 +128,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+api/reports/save-report/upload-image-to-gcs/missions-server-dc8d19cf9f2c.json

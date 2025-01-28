@@ -2,10 +2,15 @@ import { Storage } from "@google-cloud/storage";
 import fetch from "node-fetch";
 import Jimp from "jimp";
 
-const storage = new Storage({
-  keyFilename:
-    "./api/reports/save-report/upload-image-to-gcs/missions-server-dc8d19cf9f2c.json",
-});
+const base64Credentials = process.env.GCS_APPLICATION_CREDENTIALS_BASE64;
+
+// Decode Base64 into JSON
+const credentials = JSON.parse(
+  Buffer.from(base64Credentials, "base64").toString("utf8")
+);
+
+// Initialize the Storage client with credentials
+const storage = new Storage({ credentials });
 const bucketName = "intelligence-images";
 const bucket = storage.bucket(bucketName);
 
