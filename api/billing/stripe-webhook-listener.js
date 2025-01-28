@@ -2,7 +2,7 @@ import saveToSupabase from "../../utils/saveToSupabase.js";
 import { getSupabase } from "../../utils/supabase.js";
 import Stripe from "stripe";
 // console.log(process.env.STRIPE_KEY);
-const stripe = new Stripe(process.env.DEV_PROD_KEY);
+const stripe = new Stripe(process.env.PROD_STRIPE_KEY);
 // const stripe = new Stripe(process.env.DEV_STRIPE_KEY);
 export default async function handler(req, res) {
   const supabase = getSupabase();
