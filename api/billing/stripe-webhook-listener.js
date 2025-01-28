@@ -1,13 +1,11 @@
-// import saveToSupabase from "../../utils/saveToSupabase.js";
-// import { getSupabase } from "../../utils/supabase.js";
-// import Stripe from "stripe";
+// @author Marvin-Rhone
 
-// const stripe = new Stripe(process.env.PROD_STRIPE_KEY);
-// const stripe = new Stripe(process.env.DEV_STRIPE_KEY);
 export default async function handler(req, res) {
-  // const supabase = getSupabase();
-  console.log("ONE TIME PAYMENT ENDPOINT REACHED");
-  console.log(req.body);
-  res.status(200).json({ message: "success" });
-  // "whsec_7e18c95695b159ec59e73a837473cb8bce70b7b74f533da68a78791b25895817"
+  console.log("STRIPE WEBHOOK ENDPOINT");
+
+  // const { userId, type } = req.body;
+
+  res
+    .status(200)
+    .json({ status: 200, message: "Stripe Webhook Received Successfully" });
 }
