@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     {
       role: "user",
-      content: `Craft a Dall-E prompt under 300 characters ${draftTitle} with a focus on the theme of the report. Use a color palette inspired by synthwave. Choose an appropriate and engaging art style for the image.`,
+      content: `Craft a Dall-E prompt under 300 characters ${draftTitle} with a focus on the theme of the report. Use an engaging 3D painted art style for the image. Aesthetically appealing color influence.`,
     },
   ];
 

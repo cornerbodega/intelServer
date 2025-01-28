@@ -1,7 +1,7 @@
-import OpenAI from "openai";
 import saveToFirebase from "../../../utils/saveToFirebase.js";
 
 import getExampleReportContent from "../../../utils/getExampleReportContent.js";
+import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -61,7 +61,7 @@ export async function writeDraftFunction(req) {
   console.log("write quick draft messages");
   console.log(messages);
   const stream = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o-mini",
     messages,
     stream: true,
   });

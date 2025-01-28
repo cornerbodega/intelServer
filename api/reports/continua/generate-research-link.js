@@ -59,7 +59,7 @@ export default async function handler(req, res) {
   async function getFromOpenAi4(messages) {
     const results = await openai.chat.completions
       .create({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         messages: messages,
       })
       .catch((error) => {

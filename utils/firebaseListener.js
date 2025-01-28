@@ -3,18 +3,11 @@ import { runTransaction, ref, onValue } from "firebase/database";
 import taskSchema from "./taskSchema.js";
 import { taskExecutor } from "./taskExecutor.js";
 const db = firebase.db;
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "dotenv/config";
+import signServerIntoFirebase from "./signServerIntoFirebase.js";
 
 export default function setupFirebaseListener() {
   console.log("SETUP FIREBASE LISTENER");
-
-  function signServerIntoFirebase() {
-    const email = process.env.FIREBASE_EMAIL;
-    const password = process.env.FIREBASE_PASSWORD;
-    const auth = getAuth();
-    return signInWithEmailAndPassword(auth, email, password);
-  }
 
   signServerIntoFirebase().then(async (userCredential) => {
     // wait for a random interval up to 0.5 seconds before processing the task

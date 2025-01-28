@@ -4,7 +4,7 @@ import Jimp from "jimp";
 
 const storage = new Storage({
   keyFilename:
-    "./api/reports/save-report/upload-image-to-gcs/missions-server-f90599a2c379.json",
+    "./api/reports/save-report/upload-image-to-gcs/missions-server-dc8d19cf9f2c.json",
 });
 const bucketName = "intelligence-images";
 const bucket = storage.bucket(bucketName);

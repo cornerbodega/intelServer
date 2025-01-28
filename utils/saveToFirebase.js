@@ -1,7 +1,7 @@
-import firebase from "./firebase.js"; // Adjust the path according to your project structure
+import firebase from "./firebase.js";
 import { ref, set } from "firebase/database";
 const db = firebase.db;
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import signServerIntoFirebase from "./signServerIntoFirebase.js";
 
 let cachedCredential = null;
 
@@ -52,9 +52,3 @@ export default async function saveToFirebase(table, dataToSave) {
 //     }
 //   });
 // }
-function signServerIntoFirebase() {
-  const email = "merhone@gmail.com";
-  const password = "suzi99";
-  const auth = getAuth();
-  return signInWithEmailAndPassword(auth, email, password);
-}

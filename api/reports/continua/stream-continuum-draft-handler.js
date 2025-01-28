@@ -63,7 +63,7 @@ export default async function draftReportHandler(req, res) {
     messages = [...messages, ...feedback];
   }
   const stream = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o-mini",
     messages,
     stream: true,
   });

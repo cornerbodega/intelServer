@@ -15,16 +15,15 @@ export default async function handler(req, res) {
   async function formatNewContent(newContent, reportContent) {
     try {
       const chat_completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
-            content:
-              "Add the ids of the original report to the updated report. The structure should be as close as possible to the original report. The content should be 100% the new report.",
+            content: `You will take v1 and v2 of a report and assign the IDs from v1 to v2. It is important to only include v2 content in your response. For example: v1: <div id="1234">Dog</div><div id="5678">Cat</div> and v2: <div>Dogs</div>, you return <div id="1234>Dogs</div>`,
           },
           {
             role: "user",
-            content: `the original: ${reportContent}. the updated: ${newContent}`,
+            content: `v1: ${reportContent}. v2: ${newContent}`,
           },
         ],
       });
@@ -48,6 +47,9 @@ export default async function handler(req, res) {
       .from("reports")
       .update({
         reportContent: resultContent,
+        reportTitle: resultContent
+          .split(`<h2 id="reportTitle">`)[1]
+          .split(`</h2>`)[0],
       })
       .eq("reportId", reportId);
     if (error) {

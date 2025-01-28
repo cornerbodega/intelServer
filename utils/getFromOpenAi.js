@@ -6,7 +6,7 @@ const openai = new OpenAI({
 export default async function getFromOpenAi(messages) {
   const results = await openai.chat.completions
     .create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: messages,
     })
     .catch((error) => {
