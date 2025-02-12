@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 5s # Collect metrics every 5 seconds
+
+scrape_configs:
+  - job_name: "local_bullmq"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["localhost:8080"] # Local Server
+    relabel_configs:
+      - source_labels: [job]
+        target_label: environment
+        replacement: "local"
+
+  - job_name: "cloud_bullmq"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["intelserver-716734779566.us-central1.run.app"] # Cloud Run URL
+    relabel_configs:
+      - source_labels: [job]
+        target_label: environment
+        replacement: "cloud"
