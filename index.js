@@ -1,6 +1,7 @@
 console.log("INTELLIGENCE SERVER STARTED");
 import express from "express";
 // import setupFirebaseListener from "./utils/firebaseListener.js";
+import { register } from "./utils/metrics.js"; // ✅ Import Prometheus metrics
 
 const app = express();
 
@@ -32,6 +33,20 @@ import editReport from "./api/reports/edit-report/edit-report.js";
 app.use("/api/reports/edit-report", editReport);
 
 ///////////////////////////////////////////////////////
+// PROMETHEUS METRICS
+///////////////////////////////////////////////////////
+
+app.get("/metrics", async (req, res) => {
+  try {
+    res.set("Content-Type", register.contentType);
+    res.end(await register.metrics());
+  } catch (error) {
+    console.error("Error exposing Prometheus metrics:", error);
+    res.status(500).send("Failed to retrieve metrics");
+  }
+});
+
+///////////////////////////////////////////////////////
 // Root
 ///////////////////////////////////////////////////////
 app.get("/", async (req, res) => {
@@ -43,7 +58,6 @@ app.get("/", async (req, res) => {
     res.sendStatus(500);
   }
 });
-
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   // setupFirebaseListener();
