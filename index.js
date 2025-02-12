@@ -1,7 +1,7 @@
 console.log("INTELLIGENCE SERVER STARTED");
 import express from "express";
 import bodyParser from "body-parser";
-import { register } from "./utils/metrics.js"; // ✅ Import Prometheus metrics
+// import { register } from "./utils/metrics.js"; // ✅ Import Prometheus metrics
 
 const app = express();
 app.use(bodyParser.json());
@@ -28,15 +28,15 @@ app.use("/api/reports/edit-report", editReport);
 // ///////////////////////////////////////////////////////
 // // System Metrics for Prometheus
 // ///////////////////////////////////////////////////////
-app.get("/metrics", async (req, res) => {
-  try {
-    res.set("Content-Type", register.contentType);
-    res.end(await register.metrics());
-  } catch (error) {
-    console.error("Error exposing Prometheus metrics:", error);
-    res.status(500).send("Failed to retrieve metrics");
-  }
-});
+// app.get("/metrics", async (req, res) => {
+//   try {
+//     res.set("Content-Type", register.contentType);
+//     res.end(await register.metrics());
+//   } catch (error) {
+//     console.error("Error exposing Prometheus metrics:", error);
+//     res.status(500).send("Failed to retrieve metrics");
+//   }
+// });
 
 ///////////////////////////////////////////////////////
 // Root
