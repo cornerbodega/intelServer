@@ -1,24 +1,23 @@
 import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { taskExecutor } from "./taskExecutor.js";
-import firebase from "./firebase.js"; // Ensure correct Firebase instance is used
+import firebase from "./firebase.js";
 import { ref, set } from "firebase/database";
+import { jobsProcessed, jobExecutionTime } from "./metrics.js"; // Import Prometheus metrics
 
-const db = firebase.db; // ✅ Use the same Firebase DB instance as in firebaseListener.js
-
-// Connect to Redis (Upstash or any other Redis provider)
+const db = firebase.db;
 const redisConnection = new Redis(process.env.REDIS_URL, {
   tls: {},
   maxRetriesPerRequest: null,
 });
 
-// Create a BullMQ worker for the "taskQueue"
+// Create BullMQ worker
 const worker = new Worker(
   "taskQueue",
   async (job) => {
     console.log(`Processing task: ${job.id} (type: ${job.name})`);
+    const startTime = Date.now(); // ✅ Start timing job execution
 
-    // ✅ Firebase reference for the task status
     const taskStatusRef = ref(
       db,
       `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
@@ -27,20 +26,18 @@ const worker = new Worker(
     );
 
     try {
-      // ✅ Update Firebase: Mark task as "in-progress"
       await set(taskStatusRef, "in-progress");
-      console.log(`Task ${job.id} marked as in-progress in Firebase`);
+      console.log(`Task ${job.id} marked as in-progress`);
 
-      // ✅ Execute the actual task
+      // ✅ Execute task
       const updatedContext = await taskExecutor({
         taskName: job.name,
         taskData: job.data,
-        taskContext: {}, // Or pass an initial context if needed
+        taskContext: {},
         userId: job.data.userId,
         taskType: job.name,
       });
 
-      // ✅ Save task result to Firebase
       const taskResultRef = ref(
         db,
         `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
@@ -49,31 +46,36 @@ const worker = new Worker(
       );
       await set(taskResultRef, updatedContext);
 
-      // ✅ Update Firebase: Mark task as "complete"
       await set(taskStatusRef, "complete");
-      console.log(`Task ${job.id} marked as complete in Firebase`);
-    } catch (error) {
-      console.error(`Error processing task ${job.id}:`, error);
+      console.log(`Task ${job.id} completed`);
 
-      // ❌ Update Firebase: Mark task as "error"
+      // ✅ Update Prometheus Metrics
+      jobsProcessed.inc({ queue: "taskQueue", status: "completed" });
+      jobExecutionTime.observe(
+        { queue: "taskQueue" },
+        (Date.now() - startTime) / 1000
+      );
+    } catch (error) {
+      console.error(`Task ${job.id} failed:`, error);
       await set(taskStatusRef, "error");
 
-      // ❌ Log the error message in Firebase
-      const taskErrorMessageRef = ref(
+      const taskErrorRef = ref(
         db,
         `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
           process.env.SERVER_UID
         }/${job.data.userId}/${job.name}/errorMessage`
       );
-      await set(taskErrorMessageRef, error.message || "Unknown error");
+      await set(taskErrorRef, error.message || "Unknown error");
 
-      throw error; // Let BullMQ handle retries and failure events
+      // ❌ Update Prometheus Metrics for failures
+      jobsProcessed.inc({ queue: "taskQueue", status: "failed" });
+      throw error;
     }
   },
   { connection: redisConnection }
 );
 
-// Handle failed jobs
+// Log failed jobs
 worker.on("failed", (job, err) => {
   console.error(`Job ${job.id} failed: ${err.message}`);
 });
