@@ -131,3 +131,4 @@ dist
 api/reports/save-report/upload-image-to-gcs/missions-server-dc8d19cf9f2c.json
 api/reports/save-report/upload-image-to-gcs/.DS_Store
 data/wal/00000000
+/data
