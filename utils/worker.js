@@ -28,6 +28,10 @@ async function initializeWorker() {
     "taskQueue",
     async (job) => {
       console.log(`🔄 Processing task: ${job.id} (type: ${job.name})`);
+      console.log(
+        `Worker process environment:`,
+        process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
+      );
 
       const taskPath = `/${
         process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
