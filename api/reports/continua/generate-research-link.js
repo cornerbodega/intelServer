@@ -56,6 +56,8 @@ export default async function handler(req, res) {
     },
   ];
   const researchLinksResponse = await getFromOpenAi4(messages);
+  console.log("researchLinksResponse");
+  console.log(researchLinksResponse);
   async function getFromOpenAi4(messages) {
     const results = await openai.chat.completions
       .create({
@@ -66,8 +68,11 @@ export default async function handler(req, res) {
         console.log("get from open ai error");
         console.log(error);
       });
-
-    return results.choices[0].message.content;
+    function extractJsonString(input) {
+      const match = input.match(/^```json\s*([\s\S]*?)\s*```$/);
+      return match ? match[1].trim() : input;
+    }
+    return extractJsonString(results.choices[0].message.content);
   }
 
   let researchLinks = researchLinksResponse;

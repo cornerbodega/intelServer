@@ -76,14 +76,14 @@ export async function writeDraftFunction(req) {
       `${newAccumulatedContent}…`
     );
     console.log("saveChunkToFirebase");
-    console.log(saveChunkToFirebase);
+    console.log(`Current Time: ${new Date().toISOString()}`);
   }
   newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
     `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
       process.env.SERVER_UID
     }/${req.body.userId}/quickDraft/context/draft`,
-    `${newAccumulatedContent}}`
+    `${newAccumulatedContent}`
   );
   console.log("savedDraftToFirebase");
 

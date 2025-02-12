@@ -1,60 +1,52 @@
 // @author Marvin-Rhone
 
-import saveToFirebase from "../../../utils/saveToFirebase.js";
+import { addTaskToQueue } from "../../../utils/queue.js";
 import { getSupabase } from "../../../utils/supabase.js";
+
 export default async function handler(req, res) {
   console.log("QUEUE SAVE REGENERATE FOLDER TASK ENDPOINT");
 
   console.log(req.body);
   const { userId, folderId, currentGeneration, maxGenerations } = req.body;
   const supabase = getSupabase();
+
   try {
-    const { foldersResponse, error } = await supabase
+    const { data: foldersResponse, error } = await supabase
       .from("folders")
       .select("folderPicUrl")
       .eq("folderId", folderId);
+
     if (error) {
       console.log(error);
+      return res.status(500).json({ error: "Database query failed." });
     }
-    if (foldersResponse) {
-      if (foldersResponse[0]) {
-        if (foldersResponse[0].folderPicUrl) {
-          console.log("folderPicUrl exists");
-          return;
-        }
-      }
+
+    if (foldersResponse && foldersResponse[0]?.folderPicUrl) {
+      console.log("folderPicUrl exists - skipping regeneration.");
+      return res.status(200).json({ message: "Folder image already exists." });
     }
   } catch (error) {
-    console.log(error);
+    console.log("Database error:", error);
+    return res.status(500).json({ error: "Error checking folder data." });
   }
 
   try {
+    // ✅ New Task Object (Same Format as Before)
     const newTask = {
       type: "regenerateFolder",
       status: "queued",
       userId,
-      context: {
-        folderId,
-      },
+      context: { folderId },
       createdAt: new Date().toISOString(),
     };
 
-    const saveTaskRef = await saveToFirebase(
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.SERVER_UID
-      }/${userId}/regenerateFolder`,
-      newTask
-    );
+    // ✅ Queue Task in Redis Instead of Firebase
+    await addTaskToQueue("regenerateFolder", newTask);
 
-    if (saveTaskRef) {
-      console.log("saveTaskRef");
-      console.log(saveTaskRef);
-      return { saveTaskRef };
-    } else {
-      console.error("Failed to queue the task.");
-    }
+    console.log("Task successfully queued in Redis (BullMQ)");
+    return res.status(200).json({ message: "Task queued successfully." });
   } catch (error) {
     console.error("Error queuing the task:", error.message);
-  } finally {
+    return res.status(500).json({ error: "Task queuing failed." });
   }
 }

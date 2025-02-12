@@ -1,6 +1,6 @@
 console.log("INTELLIGENCE SERVER STARTED");
 import express from "express";
-import setupFirebaseListener from "./utils/firebaseListener.js";
+// import setupFirebaseListener from "./utils/firebaseListener.js";
 
 const app = express();
 
@@ -46,8 +46,11 @@ app.get("/", async (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  setupFirebaseListener();
+  // setupFirebaseListener();
   console.log(
     `Hello from Cloud Run! The container started successfully and is listening for HTTP requests on ${PORT}`
   );
 });
+
+// Start the background worker
+import "./utils/worker.js";
