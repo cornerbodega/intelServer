@@ -1,11 +1,10 @@
 console.log("INTELLIGENCE SERVER STARTED");
 import express from "express";
+// import setupFirebaseListener from "./utils/firebaseListener.js";
 import bodyParser from "body-parser";
 // import { register } from "./utils/metrics.js"; // ✅ Import Prometheus metrics
 
 const app = express();
-
-import bodyParser from "body-parser";
 
 app.use(bodyParser.json());
 
@@ -59,11 +58,10 @@ app.get("/", async (req, res) => {
 });
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  // setupFirebaseListener();
   console.log(
     `Hello from Cloud Run! The container started successfully and is listening for HTTP requests on ${PORT}`
   );
 });
 
 // Start the background worker
-import "./worker.js";
+import "./utils/worker.js";
