@@ -6,6 +6,13 @@ import { getSupabase } from "../../../utils/supabase.js";
 export default async function handler(req, res) {
   console.log("QUEUE SAVE REGENERATE FOLDER TASK ENDPOINT");
 
+  // 🔹 Log the incoming request body
+  console.log("Request Body:", req.body);
+
+  if (!req.body) {
+    return res.status(400).json({ error: "Missing request body." });
+  }
+
   console.log(req.body);
   const { userId, folderId, currentGeneration, maxGenerations } = req.body;
   const supabase = getSupabase();
@@ -46,7 +53,7 @@ export default async function handler(req, res) {
     console.log("Task successfully queued in Redis (BullMQ)");
     return res.status(200).json({ message: "Task queued successfully." });
   } catch (error) {
-    console.error("Error queuing the task:", error.message);
-    return res.status(500).json({ error: "Task queuing failed." });
+    return console.error("Error queuing the task:", error.message);
+    // return res.status(500).json({ error: "Task queuing failed." });
   }
 }

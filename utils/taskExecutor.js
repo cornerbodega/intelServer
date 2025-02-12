@@ -2,11 +2,24 @@ import taskSchema from "./taskSchema.js";
 import saveToFirebase from "./saveToFirebase.js";
 async function findTaskDefinition(taskName) {
   const taskSchemaDefinition = taskSchema();
+
+  if (!taskSchemaDefinition) {
+    console.error("❌ ERROR: taskSchema() returned undefined.");
+    return null;
+  }
+
+  console.log(
+    "📌 Loaded Task Schema:",
+    JSON.stringify(taskSchemaDefinition, null, 2)
+  );
+
   let taskDefinition;
 
   for (const topLevelTaskName in taskSchemaDefinition) {
     const topLevelTask = taskSchemaDefinition[topLevelTaskName];
+
     if (topLevelTaskName === taskName) {
+      console.log(`✅ Found task definition for: ${taskName}`);
       taskDefinition = topLevelTask;
       break;
     }
@@ -14,6 +27,7 @@ async function findTaskDefinition(taskName) {
     if (topLevelTask.subtasks) {
       for (const subtask of topLevelTask.subtasks) {
         if (subtask.taskName === taskName) {
+          console.log(`✅ Found subtask definition for: ${taskName}`);
           taskDefinition = subtask;
           break;
         }
@@ -23,29 +37,33 @@ async function findTaskDefinition(taskName) {
     if (taskDefinition) break;
   }
 
+  if (!taskDefinition) {
+    console.error(`❌ ERROR: No task definition found for ${taskName}`);
+  }
+
   return taskDefinition;
 }
 
 async function executeTask(taskName, inputs) {
+  console.log(`🔄 Running task: ${taskName}`);
+
   const taskDefinition = await findTaskDefinition(taskName);
 
-  console.log(`Running ${taskName}`);
-
   if (!taskDefinition) {
-    console.log("error 3454: missing taskDefinition for");
-    console.log(taskName);
-    return;
+    console.error(`❌ ERROR 3454: Missing taskDefinition for ${taskName}`);
+    return {};
   }
 
-  if (taskDefinition.function) {
-    return await taskDefinition.function({ body: inputs });
-  } else {
-    console.log("error 3455: missing function for");
-    console.log(taskName);
-    console.log(`taskDefinition: ${JSON.stringify(taskDefinition)}`);
-    return;
+  if (!taskDefinition.function) {
+    console.error(`❌ ERROR 3455: Missing function for ${taskName}`);
+    console.log(`taskDefinition: ${JSON.stringify(taskDefinition, null, 2)}`);
+    return {};
   }
+
+  console.log(`✅ Executing function for task: ${taskName}`);
+  return await taskDefinition.function({ body: inputs });
 }
+
 async function executeSubtasks(
   subtasks,
   context,

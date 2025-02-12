@@ -1,79 +1,130 @@
-import { Worker } from "bullmq";
+import { Queue, Worker } from "bullmq";
 import Redis from "ioredis";
 import { taskExecutor } from "./taskExecutor.js";
-import firebase from "./firebase.js"; // Ensure correct Firebase instance is used
+import firebase from "./firebase.js";
+import signServerIntoFirebase from "./signServerIntoFirebase.js"; // Import authentication
 import { ref, set } from "firebase/database";
 
-const db = firebase.db; // ✅ Use the same Firebase DB instance as in firebaseListener.js
+const db = firebase.db;
 
-// Connect to Redis (Upstash or any other Redis provider)
+// Initialize Redis connection
 const redisConnection = new Redis(process.env.REDIS_URL, {
   tls: {},
   maxRetriesPerRequest: null,
 });
 
-// Create a BullMQ worker for the "taskQueue"
-const worker = new Worker(
-  "taskQueue",
-  async (job) => {
-    console.log(`Processing task: ${job.id} (type: ${job.name})`);
+// Authenticate Firebase before starting the worker
+async function initializeWorker() {
+  try {
+    await signServerIntoFirebase();
+    console.log("✅ Server signed into Firebase successfully!");
+  } catch (error) {
+    console.error("❌ Firebase Authentication Failed:", error);
+    process.exit(1); // Exit if authentication fails
+  }
 
-    // ✅ Firebase reference for the task status
-    const taskStatusRef = ref(
-      db,
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.SERVER_UID
-      }/${job.data.userId}/${job.name}/status`
+  // Create a BullMQ worker for "taskQueue"
+  const worker = new Worker(
+    "taskQueue",
+    async (job) => {
+      console.log(`🔄 Processing task: ${job.id} (type: ${job.name})`);
+
+      const taskPath = `/${
+        process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
+      }/${process.env.SERVER_UID}/${job.data.userId}/${job.name}`;
+
+      const taskStatusRef = ref(db, `${taskPath}/status`);
+
+      try {
+        // Mark task as in-progress
+        await set(taskStatusRef, "in-progress");
+        console.log(`🟡 Task ${job.id} marked as "in-progress" in Firebase`);
+
+        // Execute task
+        const updatedContext = await taskExecutor({
+          taskName: job.name,
+          taskData: job.data,
+          taskContext: {},
+          userId: job.data.userId,
+          taskType: job.name,
+        });
+
+        // Store task result in Firebase
+        await set(ref(db, `${taskPath}/result`), updatedContext);
+
+        // Mark task as complete
+        await set(taskStatusRef, "complete");
+        console.log(`✅ Task ${job.id} marked as "complete" in Firebase`);
+      } catch (error) {
+        console.error(`❌ Error processing task ${job.id}:`, error);
+
+        // Mark task as failed in Firebase
+        await set(taskStatusRef, "error");
+
+        // Log error message in Firebase
+        await set(
+          ref(db, `${taskPath}/errorMessage`),
+          error.message || "Unknown error"
+        );
+
+        throw error; // Let BullMQ handle retries
+      }
+    },
+    { connection: redisConnection }
+  );
+
+  // Log worker events for debugging
+  worker.on("ready", () =>
+    console.log("🚀 Worker is ready and listening for tasks")
+  );
+  worker.on("error", (err) =>
+    console.error("❌ Worker encountered an error:", err)
+  );
+  worker.on("failed", (job, err) =>
+    console.error(`❌ Job ${job?.id} failed:`, err)
+  );
+  worker.on("completed", (job) =>
+    console.log(`✅ Job ${job.id} completed successfully`)
+  );
+
+  console.log("👷 Worker initialized and awaiting jobs...");
+}
+
+initializeWorker(); // Call function to sign in and start worker
+
+console.log("👷 Worker initialized and awaiting jobs...");
+
+const queue = new Queue("taskQueue", { connection: redisConnection });
+async function checkQueue() {
+  const waitingJobs = await queue.getWaiting();
+  const activeJobs = await queue.getActive();
+  const delayedJobs = await queue.getDelayed();
+  const failedJobs = await queue.getFailed();
+
+  console.log(`📊 Jobs in Queue:`);
+  console.log(`🔹 Waiting: ${waitingJobs.length}`);
+  console.log(`🔹 Active: ${activeJobs.length}`);
+  console.log(`🔹 Delayed: ${delayedJobs.length}`);
+  console.log(`🔹 Failed: ${failedJobs.length}`);
+
+  if (waitingJobs.length > 0) {
+    console.log("➡️ First Waiting Job Details:", waitingJobs[0]);
+  }
+}
+
+checkQueue();
+
+async function getFailedJobs() {
+  const failedJobs = await queue.getFailed();
+
+  console.log(`❌ Failed Jobs Count: ${failedJobs.length}`);
+
+  if (failedJobs.length > 0) {
+    console.log(
+      "🔴 First Failed Job Details:",
+      JSON.stringify(failedJobs[0], null, 2)
     );
+  }
+}
 
-    try {
-      // ✅ Update Firebase: Mark task as "in-progress"
-      await set(taskStatusRef, "in-progress");
-      console.log(`Task ${job.id} marked as in-progress in Firebase`);
-
-      // ✅ Execute the actual task
-      const updatedContext = await taskExecutor({
-        taskName: job.name,
-        taskData: job.data,
-        taskContext: {}, // Or pass an initial context if needed
-        userId: job.data.userId,
-        taskType: job.name,
-      });
-
-      // ✅ Save task result to Firebase
-      const taskResultRef = ref(
-        db,
-        `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-          process.env.SERVER_UID
-        }/${job.data.userId}/${job.name}/result`
-      );
-      await set(taskResultRef, updatedContext);
-
-      // ✅ Update Firebase: Mark task as "complete"
-      await set(taskStatusRef, "complete");
-      console.log(`Task ${job.id} marked as complete in Firebase`);
-    } catch (error) {
-      console.error(`Error processing task ${job.id}:`, error);
-
-      // ❌ Update Firebase: Mark task as "error"
-      await set(taskStatusRef, "error");
-
-      // ❌ Log the error message in Firebase
-      const taskErrorMessageRef = ref(
-        db,
-        `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-          process.env.SERVER_UID
-        }/${job.data.userId}/${job.name}/errorMessage`
-      );
-      await set(taskErrorMessageRef, error.message || "Unknown error");
-
-      throw error; // Let BullMQ handle retries and failure events
-    }
-  },
-  { connection: redisConnection }
-);
-
-// Handle failed jobs
-worker.on("failed", (job, err) => {
-  console.error(`Job ${job.id} failed: ${err.message}`);
-});
+getFailedJobs();
