@@ -129,3 +129,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 api/reports/save-report/upload-image-to-gcs/missions-server-dc8d19cf9f2c.json
+*/.DS_Store
+*.env
+data/*
+.DS_Store
+api/reports/.DS_Store
+api/reports/save-report/.DS_Store
+data/wal/00000000
+api/.DS_Store
