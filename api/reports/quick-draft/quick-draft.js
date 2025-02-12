@@ -70,9 +70,9 @@ export async function writeDraftFunction(req) {
   for await (const part of stream) {
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     const saveChunkToFirebase = await saveToFirebase(
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.SERVER_UID
-      }/${req.body.userId}/quickDraft/context/draft`,
+      `/${"asyncTasks"}/${process.env.SERVER_UID}/${
+        req.body.userId
+      }/quickDraft/context/draft`,
       `${newAccumulatedContent}…`
     );
     console.log("saveChunkToFirebase");
@@ -80,9 +80,9 @@ export async function writeDraftFunction(req) {
   }
   newAccumulatedContent += `${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
-    `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-      process.env.SERVER_UID
-    }/${req.body.userId}/quickDraft/context/draft`,
+    `/${"asyncTasks"}/${process.env.SERVER_UID}/${
+      req.body.userId
+    }/quickDraft/context/draft`,
     `${newAccumulatedContent}`
   );
   console.log("savedDraftToFirebase");

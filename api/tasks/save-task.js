@@ -9,11 +9,7 @@ export default async function handler(req, res) {
   const { userId, type } = req.body;
   // Legacy code: save the task to Firebase. Still used by client
   const saveTaskRef = await saveToFirebase(
-    `/${
-      process.env.NEXT_PUBLIC_env
-        ? process.env.NEXT_PUBLIC_env
-        : "localAsyncTasks"
-    }/${process.env.SERVER_UID}/${userId}/${type}/`,
+    `/${"asyncTasks"}/${process.env.SERVER_UID}/${userId}/${type}/`,
     req.body
   );
 

@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   try {
     const saveFolderIdRef = await saveToFirebase(
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
+      `/${"asyncTasks"}/${
         process.env.SERVER_UID
       }/${userId}/finalizeAndVisualizeReport/context/folderId`,
       folderId

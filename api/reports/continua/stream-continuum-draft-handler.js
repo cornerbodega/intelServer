@@ -73,19 +73,17 @@ export default async function draftReportHandler(req, res) {
     // process.stdout.write(part.choices[0]?.delta?.content || "");
     newAccumulatedContent += part.choices[0]?.delta?.content || "";
     await saveToFirebase(
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.SERVER_UID
-      }/${req.body.userId}/continuum/context/draft`,
+      `/${"asyncTasks"}/${process.env.SERVER_UID}/${
+        req.body.userId
+      }/continuum/context/draft`,
       `${newAccumulatedContent}`
     );
   }
   newAccumulatedContent = `${newAccumulatedContent}${" ".repeat(3)}`;
   const saveDraftToFirebase = await saveToFirebase(
-    `/${
-      process.env.NEXT_PUBLIC_env
-        ? process.env.NEXT_PUBLIC_env
-        : "localAsyncTasks"
-    }/${process.env.SERVER_UID}/${userId}/continuum/context/draft`,
+    `/${"asyncTasks"}/${
+      process.env.SERVER_UID
+    }/${userId}/continuum/context/draft`,
     `${newAccumulatedContent}`
   );
 

@@ -29,9 +29,9 @@ async function initializeWorker() {
     async (job) => {
       console.log(`🔄 Processing task: ${job.id} (type: ${job.name})`);
 
-      const taskPath = `/${
-        process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-      }/${process.env.SERVER_UID}/${job.data.userId}/${job.name}`;
+      const taskPath = `/${"asyncTasks"}/${process.env.SERVER_UID}/${
+        job.data.userId
+      }/${job.name}`;
 
       const taskStatusRef = ref(db, `${taskPath}/status`);
 

@@ -111,7 +111,7 @@ export async function taskExecutor({
     accumulatedContext = await executeSubtasks(
       taskDefinition.subtasks,
       accumulatedContext,
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}`,
+      `/${"asyncTasks"}`,
       userId,
       taskType
     );

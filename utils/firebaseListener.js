@@ -11,12 +11,7 @@ export default function setupFirebaseListener() {
 
   signServerIntoFirebase().then(async (userCredential) => {
     // wait for a random interval up to 0.5 seconds before processing the task
-    const taskRef = ref(
-      db,
-      `/${process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"}/${
-        process.env.SERVER_UID
-      }/`
-    );
+    const taskRef = ref(db, `/${"asyncTasks"}/${process.env.SERVER_UID}/`);
 
     // Debounce function
     function debounce(func, wait) {
@@ -55,9 +50,9 @@ export default function setupFirebaseListener() {
             // Transaction to update task status to 'in-progress'
             const taskStatusRef = ref(
               db,
-              `/${
-                process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-              }/${process.env.SERVER_UID}/${userId}/${taskType}/status`
+              `/${"asyncTasks"}/${
+                process.env.SERVER_UID
+              }/${userId}/${taskType}/status`
             );
 
             await runTransaction(taskStatusRef, () => "in-progress");
@@ -95,9 +90,9 @@ export default function setupFirebaseListener() {
               // Additional transactions for saving completedAt and context
               const taskCompletedAtRef = ref(
                 db,
-                `/${
-                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.SERVER_UID}/${userId}/${taskType}/completedAt`
+                `/${"asyncTasks"}/${
+                  process.env.SERVER_UID
+                }/${userId}/${taskType}/completedAt`
               );
               await runTransaction(taskCompletedAtRef, () =>
                 new Date().toISOString()
@@ -105,9 +100,9 @@ export default function setupFirebaseListener() {
 
               const taskContextRef = ref(
                 db,
-                `/${
-                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.SERVER_UID}/${userId}/${taskType}/context`
+                `/${"asyncTasks"}/${
+                  process.env.SERVER_UID
+                }/${userId}/${taskType}/context`
               );
               await runTransaction(taskContextRef, () => updatedContext);
             } catch (error) {
@@ -118,9 +113,9 @@ export default function setupFirebaseListener() {
               await runTransaction(taskStatusRef, () => "error");
               const taskErrorMessageRef = ref(
                 db,
-                `/${
-                  process.env.NEXT_PUBLIC_env ? "asyncTasks" : "localAsyncTasks"
-                }/${process.env.SERVER_UID}/${userId}/${taskType}/errorMessage`
+                `/${"asyncTasks"}/${
+                  process.env.SERVER_UID
+                }/${userId}/${taskType}/errorMessage`
               );
               await runTransaction(
                 taskErrorMessageRef,
