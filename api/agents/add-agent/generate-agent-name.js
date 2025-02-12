@@ -10,7 +10,7 @@ const openai = new OpenAI({
 import { getSupabase } from "../../../utils/supabase.js";
 export default async function generateAgentNameHandler(req, res) {
   const supabase = getSupabase();
-  console.log("GENERATE EXPERTISE ENDPOINT");
+  console.log("GENERATE Agent Name ENDPOINT");
   console.log("req.body");
   console.log(req.body);
   if (req.body.agentId) {

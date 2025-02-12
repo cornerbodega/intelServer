@@ -8,11 +8,6 @@ async function findTaskDefinition(taskName) {
     return null;
   }
 
-  console.log(
-    "📌 Loaded Task Schema:",
-    JSON.stringify(taskSchemaDefinition, null, 2)
-  );
-
   let taskDefinition;
 
   for (const topLevelTaskName in taskSchemaDefinition) {

@@ -50,7 +50,7 @@ async function initializeWorker() {
         });
 
         // Store task result in Firebase
-        await set(ref(db, `${taskPath}/result`), updatedContext);
+        await set(ref(db, `${taskPath}/context`), updatedContext);
 
         // Mark task as complete
         await set(taskStatusRef, "complete");
