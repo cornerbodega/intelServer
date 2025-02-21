@@ -66,8 +66,9 @@ async function initializeWorker() {
           ref(db, `${taskPath}/errorMessage`),
           error.message || "Unknown error"
         );
+        console.log(`❌ Task ${job.id} marked as "error" in Firebase`);
 
-        throw error; // Let BullMQ handle retries
+        // throw error; // Let BullMQ handle retries
       }
     },
     { connection: redisConnection }
