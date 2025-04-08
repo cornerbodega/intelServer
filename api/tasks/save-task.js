@@ -1,7 +1,6 @@
 // @author Marvin-Rhone
 
 import saveToFirebase from "../../utils/saveToFirebase.js";
-import { addTaskToQueue } from "../../utils/queue.js";
 
 export default async function handler(req, res) {
   console.log("SAVE TASK ENDPOINT");
