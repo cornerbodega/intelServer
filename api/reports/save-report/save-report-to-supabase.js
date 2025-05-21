@@ -1,6 +1,6 @@
 import saveToSupabase from "../../../utils/saveToSupabase.js";
 export default async function handler(req, res) {
-  console.log("UPLOAD AGENT PROFILE PIC ENDPOINT");
+  console.log("SAVE REPORT TO SUPABASE ENDPOINT");
   console.log(req.body);
   const { draft, agentId, briefingInput } = req.body;
   async function saveReportFunction({ draft, agentId, briefingInput }) {
@@ -26,6 +26,8 @@ export default async function handler(req, res) {
       "reports",
       newReportModel
     ).catch((error) => console.log(error));
+    console.log(`saveReportData ${JSON.stringify(saveReportData)}`);
+
     const childReportId = saveReportData[0].reportId;
     return childReportId;
   }
