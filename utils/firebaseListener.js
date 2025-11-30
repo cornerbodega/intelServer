@@ -47,7 +47,7 @@ export default function setupFirebaseListener() {
           if (taskData.status === "queued") {
             console.log("FIREBASE LISTENER ACTIVATED FOR USER:", userId);
 
-            // Transaction to update task status to 'in-progress'
+            // Transaction to update task status to 'in-progress' ONLY if still queued
             const taskStatusRef = ref(
               db,
               `/${"asyncTasks"}/${
@@ -55,7 +55,20 @@ export default function setupFirebaseListener() {
               }/${userId}/${taskType}/status`
             );
 
-            await runTransaction(taskStatusRef, () => "in-progress");
+            // Atomic check-and-set: only update if status is still "queued"
+            const { committed } = await runTransaction(taskStatusRef, (currentStatus) => {
+              if (currentStatus === "queued") {
+                return "in-progress";
+              }
+              // Abort transaction if status changed (another process picked it up)
+              return undefined;
+            });
+
+            // Skip if transaction wasn't committed (task already picked up)
+            if (!committed) {
+              console.log(`Task ${taskType} for user ${userId} already being processed, skipping...`);
+              continue;
+            }
 
             const taskDefinition = taskSchema()[taskType];
             if (!taskDefinition) {
