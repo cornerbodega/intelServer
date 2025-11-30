@@ -4,6 +4,8 @@ import { getSupabase } from "../../../utils/supabase.js";
 export default async function handler(req, res) {
   const { parentReportId, childReportId, userId } = req.body;
 
+  console.log("[handleReportFoldering] Input:", { parentReportId, childReportId, userId });
+
   const reportId = childReportId;
   let newReportFolderModel = {};
   let existingFolderId;
@@ -15,6 +17,7 @@ export default async function handler(req, res) {
   }
 
   const createNewFolder = async () => {
+    console.log("[handleReportFoldering] Creating NEW folder - this should NOT happen for continuum!");
     const newFolderModel = { userId };
     const saveFolderData = await saveToSupabase(
       "folders",
@@ -44,12 +47,16 @@ export default async function handler(req, res) {
         .from("reportFolders")
         .select("folderId")
         .eq("reportId", parentReportId);
-      console.log("reportFolder", reportFolderResponse);
+
+      console.log("[handleReportFoldering] Looking up folder for parent report:", parentReportId);
+      console.log("[handleReportFoldering] Folder lookup result:", reportFolderResponse, "error:", error);
 
       if (reportFolderResponse && reportFolderResponse.length > 0) {
         existingFolderId = reportFolderResponse[0].folderId;
+        console.log("[handleReportFoldering] Using existing folder:", existingFolderId);
       } else {
         // Parent report is not in any folder, create a new folder and add parent report to it
+        console.log("[handleReportFoldering] Parent report has no folder, creating new one");
         existingFolderId = await createNewFolder();
 
         newReportFolderModel = {
@@ -60,6 +67,7 @@ export default async function handler(req, res) {
       }
     } else {
       // If there's no parent, create a new folder and add the report to it
+      console.log("[handleReportFoldering] No parentReportId provided, creating new folder");
       existingFolderId = await createNewFolder();
     }
   }

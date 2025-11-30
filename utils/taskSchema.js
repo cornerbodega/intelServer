@@ -137,7 +137,7 @@ export default function taskSchema() {
         {
           taskName: "saveReportWithoutImage",
           function: saveReportToSupabaseHandler,
-          inputs: ["draft", "userId"],
+          inputs: ["draft", "userId", "agentId"],
           outputs: ["childReportId"],
         },
         {
