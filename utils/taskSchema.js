@@ -379,7 +379,7 @@ export default function taskSchema() {
         "agentId",
         "parentReportContent",
         "parentReportId",
-        "hightlightedText",
+        "highlightedText",
         "elementId",
         "draft",
       ],
